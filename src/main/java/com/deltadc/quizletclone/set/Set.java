@@ -2,7 +2,9 @@ package com.deltadc.quizletclone.set;
 
 import com.deltadc.quizletclone.card.Card;
 import com.deltadc.quizletclone.folder.Folder;
+import com.deltadc.quizletclone.folderset.FolderSet;
 import com.deltadc.quizletclone.review.Review;
+import com.deltadc.quizletclone.settag.SetTag;
 import com.deltadc.quizletclone.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,4 +50,9 @@ public class Set {
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
+    @OneToOne(mappedBy = "set", cascade = CascadeType.ALL)
+    private SetTag setTag;
+
+    @OneToOne(mappedBy = "set")
+    private List<FolderSet> folderSet;
 }
