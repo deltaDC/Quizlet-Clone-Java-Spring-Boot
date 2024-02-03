@@ -43,5 +43,5 @@ public class User {
     private List<Folder> folders;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private StudySession studySession;
+    private List<StudySession> studySessions;
 }
