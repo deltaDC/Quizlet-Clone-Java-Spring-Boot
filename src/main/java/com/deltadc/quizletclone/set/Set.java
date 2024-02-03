@@ -1,7 +1,6 @@
 package com.deltadc.quizletclone.set;
 
 import com.deltadc.quizletclone.card.Card;
-import com.deltadc.quizletclone.folder.Folder;
 import com.deltadc.quizletclone.folderset.FolderSet;
 import com.deltadc.quizletclone.review.Review;
 import com.deltadc.quizletclone.settag.SetTag;
@@ -19,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "set")
+@Table(name = "sets")
 public class Set {
 
     @Id
@@ -44,8 +43,8 @@ public class Set {
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<Card> cards;
 
-    @ManyToMany(mappedBy = "set")
-    private List<Folder> folders;
+//    @ManyToMany(mappedBy = "set")
+//    private List<Folder> folders;
 
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<Review> reviews;
@@ -53,6 +52,6 @@ public class Set {
     @OneToOne(mappedBy = "set", cascade = CascadeType.ALL)
     private SetTag setTag;
 
-    @OneToOne(mappedBy = "set")
-    private List<FolderSet> folderSet;
+    @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
+    private List<FolderSet> folderSets;
 }
