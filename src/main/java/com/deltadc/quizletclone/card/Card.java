@@ -21,7 +21,6 @@ public class Card {
     private Long card_id;
 
     @OneToOne
-    @JoinColumn(name = "response_id")
     private CardResponse cardResponse;
 
     @ManyToOne
