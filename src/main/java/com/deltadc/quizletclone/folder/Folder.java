@@ -37,6 +37,6 @@ public class Folder {
 
     private boolean isPublic;
 
-    @OneToOne(mappedBy = "folder")
-    private List<FolderSet> folderSet;
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    private List<FolderSet> folderSets;
 }
