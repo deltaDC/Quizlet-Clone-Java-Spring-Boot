@@ -20,7 +20,7 @@ public class StudySession {
     @Column(name = "session_id")
     private Long session_id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
