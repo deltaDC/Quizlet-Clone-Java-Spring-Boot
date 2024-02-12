@@ -1,6 +1,8 @@
 package com.deltadc.quizletclone.set;
 
 import com.deltadc.quizletclone.card.Card;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +33,26 @@ public class SetService {
         // Nếu người dùng có quyền truy cập vào set, bạn có thể lấy danh sách card thuộc về set và trả về
         List<Card> cards = set.getCards();
         return ResponseEntity.ok(cards);
+    }
+
+    public ResponseEntity<String> createSet(String json) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            List<Card> cardList = mapper.readValue(json, new TypeReference<List<Card>>() {});
+
+            Set createdSet = new Set();
+
+            for(Card c : cardList) {
+                c.setSet(createdSet);
+                createdSet.addCard(c);
+            }
+
+            setRepository.save(createdSet);
+
+            return ResponseEntity.ok("Tạo set thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo set");
+        }
     }
 }
