@@ -20,11 +20,11 @@ public class CardResponse {
     @Column(name = "response_id")
     private Long response_id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "session_id")
     private StudySession studySession;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "card_id")
     private Card card;
 

@@ -25,7 +25,7 @@ public class Card {
 //    @JoinColumn(name = "response_id")
 //    private CardResponse cardResponse;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "set_id")
     private Set set;
 
