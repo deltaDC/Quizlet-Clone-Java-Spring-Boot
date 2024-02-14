@@ -21,6 +21,8 @@ public class CardService {
     }
 
     public Card createCard(Card card) {
+        card.setFront_text(card.getFront_text());
+        card.setBack_text(card.getBack_text());
         card.setCreated_at(new Date());
         card.setUpdated_at(new Date());
         return cardRepository.save(card);
