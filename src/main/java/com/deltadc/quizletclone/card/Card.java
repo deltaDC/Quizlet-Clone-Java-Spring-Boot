@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,7 +33,7 @@ public class Card {
 
     private String back_text;
 
-    private String created_at;
+    private Date created_at;
 
-    private String updated_at;
+    private Date updated_at;
 }
