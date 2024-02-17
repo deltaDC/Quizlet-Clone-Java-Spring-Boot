@@ -1,12 +1,17 @@
 package com.deltadc.quizletclone.set;
 
 import com.deltadc.quizletclone.card.Card;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.deltadc.quizletclone.user.User;
+import com.deltadc.quizletclone.user.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -14,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SetService {
     private final SetRepository setRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<List<Card>> getCardsInSet(Long setId, String userId) {
         // Kiểm tra xem setId có tồn tại trong cơ sở dữ liệu không
@@ -35,17 +41,31 @@ public class SetService {
         return ResponseEntity.ok(cards);
     }
 
-    public ResponseEntity<String> createSet(String json) {
+    public ResponseEntity<String> createSet(@RequestBody String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            List<Card> cardList = mapper.readValue(json, new TypeReference<List<Card>>() {});
+            JsonNode node = mapper.readTree(json);
+
+            String title = node.get("title").asText();
+            String description = node.get("description").asText();
+            boolean isPublic = node.get("is_public").asBoolean();
+
+            // Trích xuất thông tin người dùng từ JWT
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+
+
+            // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
+            User user = userRepository.findByEmail(username).orElse(null);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
+            }
 
             Set createdSet = new Set();
-
-            for(Card c : cardList) {
-                c.setSet(createdSet);
-                createdSet.addCard(c);
-            }
+            createdSet.setTitle(title);
+            createdSet.setDescription(description);
+            createdSet.setPublic(isPublic);
+            createdSet.setUser(user);
 
             setRepository.save(createdSet);
 
