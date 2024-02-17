@@ -1,13 +1,8 @@
 package com.deltadc.quizletclone.user;
 
-import com.deltadc.quizletclone.set.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController // danh dau class nay la RESTful Controller
 @RequiredArgsConstructor // tự động tạo một constructor chứa tất cả các trường được đánh dấu là final hoặc @NonNull.
@@ -66,10 +61,5 @@ public class UserController {
     @GetMapping("/demo")
     public String helloWorld() {
         return "Hello World";
-    }
-
-    @GetMapping("/{user_id}/sets")
-    public ResponseEntity<List<Set>> getUserSets(@PathVariable("user_id") Long userId) {
-        return userService.getUserSets(userId);
     }
 }
