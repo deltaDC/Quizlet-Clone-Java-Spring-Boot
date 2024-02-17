@@ -50,6 +50,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .username(user.getName())
+                .user_id(String.valueOf(user.getUser_id()))
                 .build();
     }
 }
