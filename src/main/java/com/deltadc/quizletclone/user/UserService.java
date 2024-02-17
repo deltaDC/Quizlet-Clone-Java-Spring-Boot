@@ -1,7 +1,9 @@
 package com.deltadc.quizletclone.user;
 
 import com.deltadc.quizletclone.set.Set;
+import com.deltadc.quizletclone.set.SetRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +12,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-//    private final UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final SetRepository setRepository;
+
 //
 //    public boolean signUp(User user) {
 //        // Kiểm tra xem người dùng có tồn tại dựa trên email hay không
@@ -34,9 +38,12 @@ public class UserService {
 //        }
 //        return true;
 //    }
+    public ResponseEntity<List<Set>> getUserSets(Long userId) {
+        // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
+        List<Set> userSets = setRepository.findByUserId(userId);
 
-    public List<Set> getUserSets(String username) {
-        return null;
+        // Trả về danh sách các set cho frontend
+        return ResponseEntity.ok(userSets);
     }
 
 
