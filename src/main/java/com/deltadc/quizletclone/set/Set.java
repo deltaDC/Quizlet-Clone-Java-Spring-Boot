@@ -5,6 +5,7 @@ import com.deltadc.quizletclone.folderset.FolderSet;
 import com.deltadc.quizletclone.review.Review;
 import com.deltadc.quizletclone.settag.SetTag;
 import com.deltadc.quizletclone.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class Set {
     @Column(name = "set_id")
     private Long set_id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
