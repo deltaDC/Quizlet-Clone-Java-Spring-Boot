@@ -1,5 +1,6 @@
 package com.deltadc.quizletclone.card;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,9 +8,9 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class CardService {
-    @Autowired
-    private CardRepository cardRepository;
+    private final CardRepository cardRepository;
 
     // Các phương thức xử lý Card
     public List<Card> getAllCards() {
@@ -23,8 +24,8 @@ public class CardService {
     public Card createCard(Card card) {
         card.setFront_text(card.getFront_text());
         card.setBack_text(card.getBack_text());
-        card.setCreated_at(new Date());
-        card.setUpdated_at(new Date());
+        card.setCreated_at(card.getCreated_at());
+        card.setUpdated_at(card.getUpdated_at());
         return cardRepository.save(card);
     }
 
