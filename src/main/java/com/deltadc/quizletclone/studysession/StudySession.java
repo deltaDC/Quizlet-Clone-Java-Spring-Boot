@@ -1,5 +1,6 @@
 package com.deltadc.quizletclone.studysession;
 
+import com.deltadc.quizletclone.card.Card;
 import  com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.user.User;
 import jakarta.persistence.*;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -28,6 +31,9 @@ public class StudySession {
     @JoinColumn(name = "set_id")
     private Set set;
 
-    private String correct_cards;
-    private String incorrect_cards;
+    @OneToMany
+    private List<Card> correct_cards;
+
+    @OneToMany
+    private List<Card> incorrect_cards;
 }
