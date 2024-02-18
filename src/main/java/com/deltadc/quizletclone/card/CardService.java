@@ -34,7 +34,7 @@ public class CardService {
         if (existingCard != null) {
             existingCard.setFront_text(updatedCard.getFront_text());
             existingCard.setBack_text(updatedCard.getBack_text());
-            existingCard.setUpdated_at(new Date());
+            existingCard.setUpdated_at(updatedCard.getUpdated_at());
             return cardRepository.save(existingCard);
         }
         return null;

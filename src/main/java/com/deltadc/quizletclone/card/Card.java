@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -33,7 +34,17 @@ public class Card {
 
     private String back_text;
 
-    private Date created_at;
+    private String created_at;
 
-    private Date updated_at;
+    private String updated_at;
+
+    @PrePersist
+    protected void onCreate() {
+        this.created_at = LocalDateTime.now().toString();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updated_at = LocalDateTime.now().toString();
+    }
 }
