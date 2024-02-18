@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -39,4 +40,14 @@ public class Folder {
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
     private List<FolderSet> folderSets;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now().toString();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now().toString();
+    }
 }

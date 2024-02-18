@@ -1,5 +1,7 @@
 package com.deltadc.quizletclone.user;
 
+import com.deltadc.quizletclone.folder.Folder;
+import com.deltadc.quizletclone.folder.FolderRepository;
 import com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.set.SetRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final SetRepository setRepository;
+    private final FolderRepository folderRepository;
 
 //
 //    public boolean signUp(User user) {
@@ -46,5 +49,11 @@ public class UserService {
     }
 
 
+    public List<Folder> getUserFolders(Long userId) {
+        // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
+        List<Folder> userFolders = folderRepository.findByUserId(userId);
 
+        // Trả về danh sách các set cho frontend
+        return userFolders;
+    }
 }
