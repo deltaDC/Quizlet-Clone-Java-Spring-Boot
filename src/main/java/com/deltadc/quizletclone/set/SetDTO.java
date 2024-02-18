@@ -6,6 +6,15 @@ public class SetDTO {
     private String description;
     private String createdAt;
     private String updatedAt;
+    private boolean isPublic;
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        this.isPublic = aPublic;
+    }
 
     public Long getSetId() {
         return setId;

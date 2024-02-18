@@ -29,6 +29,7 @@ public class SetController {
         setDTO.setDescription(set.getDescription());
         setDTO.setCreatedAt(set.getCreatedAt());
         setDTO.setUpdatedAt(set.getUpdatedAt());
+        setDTO.setPublic(set.isPublic());
         return setDTO;
     }
 
