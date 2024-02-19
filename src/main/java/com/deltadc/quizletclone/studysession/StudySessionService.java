@@ -1,12 +1,12 @@
 package com.deltadc.quizletclone.studysession;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -14,36 +14,39 @@ public class StudySessionService {
     private final StudySessionRepository studySessionRepository;
 
     // Lấy ra tất cả StudySession
-    public List<StudySession> getAllStudySessions() {
-        return studySessionRepository.findAll();
+    public ResponseEntity<List<StudySession>> getAllStudySessions() {
+        return ResponseEntity.ok(studySessionRepository.findAll());
     }
 
     // Lấy StudySession theo ID
-    public StudySession getStudySessionById(Long id) {
-        return studySessionRepository.findById(id).orElse(null);
+    public ResponseEntity<?> getStudySessionById(Long id) {
+        StudySession studySession = studySessionRepository.findById(id).orElse(null);
+        return ResponseEntity.ok(Objects.requireNonNullElse(studySession, "Not found!"));
     }
 
     // Tạo mới 1 StudySession
-    public StudySession createStudySession(StudySession studySession) {
+    public ResponseEntity<String> createStudySession(StudySession studySession) {
         StudySession newStudySession = new StudySession();
         newStudySession.setUser(studySession.getUser());
         newStudySession.setSet(studySession.getSet());
         newStudySession.setCorrect_cards(studySession.getCorrect_cards());
         newStudySession.setIncorrect_cards(studySession.getIncorrect_cards());
-        return studySessionRepository.save(newStudySession);
+        studySessionRepository.save(newStudySession);
+        return ResponseEntity.ok("Created StudySession!");
     }
 
     // Update 1 StudySession
-    public StudySession updateStudySession(Long id, StudySession studySession) {
-        StudySession existingStudySession = getStudySessionById(id);
+    public ResponseEntity<?> updateStudySession(Long id, StudySession studySession) {
+        StudySession existingStudySession = studySessionRepository.findById(id).orElse(null);
         if (existingStudySession != null) {
             existingStudySession.setUser(studySession.getUser());
             existingStudySession.setSet(studySession.getSet());
             existingStudySession.setCorrect_cards(studySession.getCorrect_cards());
             existingStudySession.setIncorrect_cards(studySession.getIncorrect_cards());
-            return studySessionRepository.save(existingStudySession);
+            studySessionRepository.save(existingStudySession);
+            return ResponseEntity.ok("Updated StudySession");
         } else {
-            return null;
+            return ResponseEntity.ok("Cannot find the StudySession");
         }
     }
 

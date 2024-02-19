@@ -1,9 +1,9 @@
 package com.deltadc.quizletclone.card;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 
 @RestController
 @AllArgsConstructor
@@ -12,25 +12,25 @@ public class CardController {
 
     // Lấy ra thông tin của tất cả card
     @GetMapping("/cards")
-    public List<Card> getAllCards() {
+    public ResponseEntity<?> getAllCards() {
         return cardService.getAllCards();
     }
 
     // Lấy ra thông tin của 1 card theo id
     @GetMapping("/cards/{id}")
-    public Card getCardById(@PathVariable Long id) {
+    public ResponseEntity<?> getCardById(@PathVariable Long id) {
         return cardService.getCardById(id);
     }
 
     // Tạo card mới
     @PostMapping("create_card")
-    public Card createCard(@RequestBody Card card) {
+    public ResponseEntity<?> createCard(@RequestBody Card card) {
         return cardService.createCard(card);
     }
 
     // Chỉnh sửa card theo id
     @PutMapping("/cards/{id}")
-    public Card updateCard(@PathVariable Long id, @RequestBody Card updatedCard) {
+    public ResponseEntity<?> updateCard(@PathVariable Long id, @RequestBody Card updatedCard) {
         return cardService.updateCard(id, updatedCard);
     }
 
