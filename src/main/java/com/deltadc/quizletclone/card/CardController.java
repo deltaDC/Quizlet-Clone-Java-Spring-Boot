@@ -23,7 +23,7 @@ public class CardController {
     }
 
     // Tạo card mới
-    @PostMapping("create_card")
+    @PostMapping("/create_card")
     public ResponseEntity<?> createCard(@RequestBody Card card) {
         return cardService.createCard(card);
     }
