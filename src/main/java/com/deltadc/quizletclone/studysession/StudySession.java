@@ -36,4 +36,7 @@ public class StudySession {
 
     @OneToMany
     private List<Card> incorrect_cards;
+
+    @OneToMany
+    private List<Card> cards;
 }

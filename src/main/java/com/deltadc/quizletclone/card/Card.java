@@ -1,5 +1,6 @@
 package com.deltadc.quizletclone.card;
 
+import com.deltadc.quizletclone.cardresponse.CardResponse;
 import com.deltadc.quizletclone.set.Set;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,13 +23,12 @@ public class Card {
     @Column(name = "card_id")
     private Long card_id;
 
-//    @OneToOne
-//    @JoinColumn(name = "response_id")
-//    private CardResponse cardResponse;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "set_id")
     private Set set;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private CardResponse cardResponse;
 
     private String front_text;
 

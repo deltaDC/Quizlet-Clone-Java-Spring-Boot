@@ -1,5 +1,6 @@
 package com.deltadc.quizletclone.studysession;
 
+import com.deltadc.quizletclone.card.Card;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,21 @@ public class StudySessionService {
         StudySession studySession = studySessionRepository.findById(id).orElse(null);
         return ResponseEntity.ok(Objects.requireNonNullElse(studySession, "Not found!"));
     }
+
+//    // Tìm card trong studySession
+//    public ResponseEntity<?> getCardInStudySession(Long session_id, Long card_id) {
+//        StudySession studySession = studySessionRepository.findById(session_id).orElse(null);
+//        if (studySession == null) {
+//            return ResponseEntity.ok("Cannot find StudySession");
+//        }
+//        List<Card> cards = studySession.getCards();
+//        for (Card card : cards) {
+//            if (card.getCard_id().equals(card_id)) {
+//                return ResponseEntity.ok(card);
+//            }
+//        }
+//        return ResponseEntity.ok("Cannot find card");
+//    }
 
     // Tạo mới 1 StudySession
     public ResponseEntity<String> createStudySession(StudySession studySession) {

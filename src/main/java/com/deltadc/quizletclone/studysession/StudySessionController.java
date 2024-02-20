@@ -22,7 +22,7 @@ public class StudySessionController {
     }
 
     @PostMapping("/study_sessions")
-    public ResponseEntity<String> createStudySession(StudySession newStudySession) {
+    public ResponseEntity<String> createStudySession(@RequestBody StudySession newStudySession) {
         return studySessionService.createStudySession(newStudySession);
     }
 
