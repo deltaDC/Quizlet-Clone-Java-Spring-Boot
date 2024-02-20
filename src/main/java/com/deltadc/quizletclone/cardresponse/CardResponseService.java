@@ -37,13 +37,23 @@ public class CardResponseService {
         return ResponseEntity.ok("Cannot find CardResponse");
     }
 
-//    public ResponseEntity<?> createCardResponse(Long card_id, CardResponse cardResponse) {
-//        Card card = cardRepository.findById(card_id).orElse(null);
-//        if (card == null) {
-//            return ResponseEntity.ok("Cannot create CardResponse!");
-//        }
-//        CardResponse newCardResponse = new CardResponse();
-//        return null;
+    // Tạo 1 CardResponse
+    public ResponseEntity<?> createCardResponse(Long card_id, CardResponse cardResponse) {
+        Card card = cardRepository.findById(card_id).orElse(null);
+        if (card == null) {
+            return ResponseEntity.ok("Cannot create CardResponse!");
+        }
+        CardResponse newCardResponse = new CardResponse();
+        newCardResponse.setStudySession(cardResponse.getStudySession());
+        newCardResponse.set_known(cardResponse.is_known());
+        newCardResponse.setCard(cardResponse.getCard());
+        cardResponseRepository.save(newCardResponse);
+        return ResponseEntity.ok("Created CardResponse!");
+    }
+
+    // Sửa 1 cardResponse
+//    public ResponseEntity<?> updateCardResponse(Long card_id, CardResponse cardResponse) {
+//
 //    }
 
     public void deleteCardResponse(Long response_id) {
