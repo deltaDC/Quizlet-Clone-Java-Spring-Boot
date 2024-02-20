@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -74,5 +75,30 @@ public class SetService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo set");
         }
+    }
+
+    public ResponseEntity<String> deleteSet(@PathVariable Long setId) {
+        // Trích xuất thông tin người dùng từ JWT
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+
+        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
+        User user = userRepository.findByEmail(username).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
+        }
+
+        Set s = setRepository.findById(setId).orElse(null);
+        if(s == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set không tồn tại");
+        }
+
+        if ( !s.getUser().getUser_id().equals(user.getUser_id())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không được phép xóa");
+        }
+
+        setRepository.deleteById(setId);
+        return ResponseEntity.ok("Xóa set thành công");
     }
 }

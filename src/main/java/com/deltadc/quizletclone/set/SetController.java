@@ -47,11 +47,6 @@ public class SetController {
         return setService.getCardsInSet(setId, currentUserId);
     }
 
-    @PostMapping("/create-set")
-    public ResponseEntity<String> createSet(@RequestBody String json) {
-        return setService.createSet(json);
-    }
-
     @GetMapping("/{user_id}/sets")
     public ResponseEntity<List<SetDTO>> getUserSets(@PathVariable("user_id") Long userId) {
         List<Set> userSets = userService.getUserSets(userId);
@@ -59,5 +54,15 @@ public class SetController {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userSetDTOs);
+    }
+
+    @PostMapping("/create-set")
+    public ResponseEntity<String> createSet(@RequestBody String json) {
+        return setService.createSet(json);
+    }
+
+    @DeleteMapping("/{setId}")
+    public ResponseEntity<String> deleteSet(@PathVariable("setId") Long setId) {
+        return setService.deleteSet(setId);
     }
 }
