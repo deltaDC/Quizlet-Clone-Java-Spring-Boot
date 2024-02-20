@@ -32,7 +32,8 @@ public class StudySessionController {
     }
 
     @DeleteMapping("/study_session/{session_id}")
-    public void deleteStudySession(@PathVariable("session_id") Long id) {
+    public ResponseEntity<?> deleteStudySession(@PathVariable("session_id") Long id) {
         studySessionService.deleteStudySession(id);
+        return ResponseEntity.ok("Deleted completely!");
     }
 }

@@ -1,6 +1,7 @@
 package com.deltadc.quizletclone.studysession;
 
 import com.deltadc.quizletclone.card.Card;
+import com.deltadc.quizletclone.cardresponse.CardResponse;
 import  com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.user.User;
 import jakarta.persistence.*;
@@ -39,4 +40,7 @@ public class StudySession {
 
     @OneToMany
     private List<Card> cards;
+
+    @OneToMany
+    private List<CardResponse> cardResponses;
 }
