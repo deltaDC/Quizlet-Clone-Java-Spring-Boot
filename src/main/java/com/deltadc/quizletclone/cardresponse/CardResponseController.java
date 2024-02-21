@@ -16,7 +16,7 @@ public class CardResponseController {
 
     @GetMapping("/study_sessions/{session_id}/responses/{response_id}")
     public ResponseEntity<?> getCardResponseById(@PathVariable("session_id") Long session_id, @PathVariable("response_id") Long response_id) {
-        return cardResponseService.getCardResponse(session_id, response_id);
+        return cardResponseService.getCardResponse(response_id);
     }
 
     @PostMapping("/study_sessions/{session_id}/responses")

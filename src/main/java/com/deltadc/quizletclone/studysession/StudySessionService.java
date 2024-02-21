@@ -22,7 +22,10 @@ public class StudySessionService {
     // Lấy StudySession theo ID
     public ResponseEntity<?> getStudySessionById(Long id) {
         StudySession studySession = studySessionRepository.findById(id).orElse(null);
-        return ResponseEntity.ok(Objects.requireNonNullElse(studySession, "Not found!"));
+        if (studySession == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(studySession);
     }
 
 //    // Tìm card trong studySession
@@ -62,12 +65,17 @@ public class StudySessionService {
             studySessionRepository.save(existingStudySession);
             return ResponseEntity.ok("Updated StudySession");
         } else {
-            return ResponseEntity.ok("Cannot find the StudySession");
+            return ResponseEntity.badRequest().body("Cannot find study session");
         }
     }
 
     // Xóa 1 StudySession
-    public void deleteStudySession(Long id) {
+    public ResponseEntity<?> deleteStudySession(Long id) {
+        StudySession studySession = studySessionRepository.findById(id).orElse(null);
+        if (studySession == null) {
+            return ResponseEntity.badRequest().body("Cannot delete");
+        }
         studySessionRepository.deleteById(id);
+        return ResponseEntity.ok("Deleted completely");
     }
 }

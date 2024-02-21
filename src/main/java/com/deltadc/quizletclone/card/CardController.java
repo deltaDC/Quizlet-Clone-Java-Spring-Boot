@@ -36,7 +36,7 @@ public class CardController {
 
     // Xóa card theo id
     @DeleteMapping("/cards/{id}")
-    public void deleteCard(@PathVariable Long id) {
-        cardService.deleteCard(id);
+    public ResponseEntity<?> deleteCard(@PathVariable Long id) {
+        return cardService.deleteCard(id);
     }
 }

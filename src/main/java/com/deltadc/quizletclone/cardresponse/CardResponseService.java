@@ -1,6 +1,5 @@
 package com.deltadc.quizletclone.cardresponse;
 
-import com.deltadc.quizletclone.card.CardRepository;
 import com.deltadc.quizletclone.studysession.StudySession;
 import com.deltadc.quizletclone.studysession.StudySessionRepository;
 import lombok.AllArgsConstructor;
@@ -19,31 +18,25 @@ public class CardResponseService {
     public ResponseEntity<?> getAllCardResponses(Long session_id) {
         StudySession studySession = studySessionRepository.findById(session_id).orElse(null);
         if (studySession == null) {
-            return ResponseEntity.ok("This study session does not exist!");
+            return ResponseEntity.badRequest().body("Cannot find study session");
         }
         return ResponseEntity.ok(studySession.getCardResponses());
     }
 
     // Lấy cardResponse theo response_id
-    public ResponseEntity<?> getCardResponse(Long session_id, Long response_id) {
-        StudySession studySession = studySessionRepository.findById(session_id).orElse(null);
-        if (studySession == null) {
-            return ResponseEntity.ok("Cannot find the StudySession");
+    public ResponseEntity<?> getCardResponse(Long response_id) {
+        CardResponse cardResponse = cardResponseRepository.findById(response_id).orElse(null);
+        if (cardResponse == null) {
+            return ResponseEntity.badRequest().body("Cannot find card response");
         }
-        List<CardResponse> cardResponses = studySession.getCardResponses();
-        for (CardResponse cardResponse : cardResponses) {
-            if (cardResponse.getResponse_id().equals(response_id)) {
-                return ResponseEntity.ok(cardResponse);
-            }
-        }
-        return ResponseEntity.ok("Cannot find CardResponse");
+        return ResponseEntity.ok(cardResponse);
     }
 
     // Tạo 1 CardResponse
     public ResponseEntity<?> createCardResponse(Long session_id, CardResponse cardResponse) {
         StudySession studySession = studySessionRepository.findById(session_id).orElse(null);
         if (studySession == null) {
-            return ResponseEntity.ok("Cannot find Study Session");
+            return ResponseEntity.badRequest().body("Cannot find study session");
         }
 
         CardResponse newCardResponse = new CardResponse();
@@ -51,14 +44,14 @@ public class CardResponseService {
         newCardResponse.set_known(cardResponse.is_known());
         newCardResponse.setCard(cardResponse.getCard());
         cardResponseRepository.save(newCardResponse);
-        return ResponseEntity.ok("Created CardResponse!");
+        return ResponseEntity.ok("Created card response!");
     }
 
     // Sửa 1 cardResponse
     public ResponseEntity<?> updateCardResponse(Long response_id, CardResponse cardResponse) {
         CardResponse existingCardResponse = cardResponseRepository.findById(response_id).orElse(null);
         if (existingCardResponse == null) {
-            return ResponseEntity.ok("Cannot find CardResponse!");
+            return ResponseEntity.badRequest().body("Cannot find card response!");
         }
 
         existingCardResponse.setStudySession(cardResponse.getStudySession());
@@ -68,7 +61,12 @@ public class CardResponseService {
         return ResponseEntity.ok("Updated CardResponse!");
     }
 
-    public void deleteCardResponse(Long response_id) {
+    public ResponseEntity<?> deleteCardResponse(Long response_id) {
+        CardResponse cardResponse = cardResponseRepository.findById(response_id).orElse(null);
+        if (cardResponse == null) {
+            return ResponseEntity.badRequest().build();
+        }
         cardResponseRepository.deleteById(response_id);
+        return ResponseEntity.ok("Deleted card response");
     }
 }

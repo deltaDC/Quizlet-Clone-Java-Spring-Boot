@@ -19,7 +19,10 @@ public class CardService {
 
     public ResponseEntity<?> getCardById(Long id) {
         Card card = cardRepository.findById(id).orElse(null);
-        return ResponseEntity.ok(Objects.requireNonNullElse(card, "Not found"));
+        if (card == null) {
+            return ResponseEntity.badRequest().body("Cannot find this card!");
+        }
+        return ResponseEntity.ok(card);
     }
 
     public ResponseEntity<?> createCard(Card card) {
@@ -40,10 +43,15 @@ public class CardService {
             cardRepository.save(existingCard);
             return ResponseEntity.ok("Updated card!");
         }
-        return ResponseEntity.ok("Not found!");
+        return ResponseEntity.badRequest().body("Cannot find card");
     }
 
-    public void deleteCard(Long id) {
+    public ResponseEntity<?> deleteCard(Long id) {
+        Card card = cardRepository.findById(id).orElse(null);
+        if (card == null) {
+            return ResponseEntity.badRequest().build();
+        }
         cardRepository.deleteById(id);
+        return ResponseEntity.ok("Deleted!");
     }
 }
