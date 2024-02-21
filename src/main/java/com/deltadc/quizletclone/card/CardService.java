@@ -25,8 +25,8 @@ public class CardService {
     public ResponseEntity<?> createCard(Card card) {
         card.setFront_text(card.getFront_text());
         card.setBack_text(card.getBack_text());
-        card.setCreated_at(card.getCreated_at());
-        card.setUpdated_at(card.getUpdated_at());
+        card.onCreate();
+        card.onUpdate();
         cardRepository.save(card);
         return ResponseEntity.ok("Created card!");
     }
@@ -36,7 +36,7 @@ public class CardService {
         if (existingCard != null) {
             existingCard.setFront_text(updatedCard.getFront_text());
             existingCard.setBack_text(updatedCard.getBack_text());
-            existingCard.setUpdated_at(updatedCard.getUpdated_at());
+            existingCard.onUpdate();
             cardRepository.save(existingCard);
             return ResponseEntity.ok("Updated card!");
         }
