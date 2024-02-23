@@ -23,9 +23,9 @@ public class CardController {
     }
 
     // Tạo card mới
-    @PostMapping("/create_card")
-    public ResponseEntity<?> createCard(@RequestBody Card card) {
-        return cardService.createCard(card);
+    @PostMapping("/{set_id}/create_card")
+    public ResponseEntity<?> createCard(@PathVariable("set_id") Long set_id,  @RequestBody Card card) {
+        return cardService.createCard(card, set_id);
     }
 
     // Chỉnh sửa card theo id

@@ -1,16 +1,19 @@
 package com.deltadc.quizletclone.card;
 
+import  com.deltadc.quizletclone.set.Set;
+import com.deltadc.quizletclone.set.SetRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
 public class CardService {
     private final CardRepository cardRepository;
+    private final SetRepository setRepository;
 
     // Các phương thức xử lý Card
     public ResponseEntity<List<Card>> getAllCards() {
@@ -25,12 +28,18 @@ public class CardService {
         return ResponseEntity.ok(card);
     }
 
-    public ResponseEntity<?> createCard(Card card) {
+    public ResponseEntity<?> createCard(Card card, Long set_id) {
+        Set set = setRepository.findById(set_id).orElse(null);
+        if (set == null) {
+            return ResponseEntity.badRequest().body("Cannot find this set!");
+        }
         card.setFront_text(card.getFront_text());
         card.setBack_text(card.getBack_text());
+        card.setSet(set);
         card.onCreate();
         card.onUpdate();
         cardRepository.save(card);
+        set.addCard(card);      // Thêm card vào trong set
         return ResponseEntity.ok("Created card!");
     }
 
