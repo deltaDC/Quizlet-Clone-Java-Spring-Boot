@@ -51,4 +51,31 @@ public class FolderService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo folder");
         }
     }
+
+    public ResponseEntity<String> deleteFolder(Long folderId) {
+        // Trích xuất thông tin người dùng từ JWT
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+
+        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
+        User user = userRepository.findByEmail(username).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
+        }
+
+        Folder f = folderRepository.findById(folderId).orElse(null);
+        if(f == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Folder không tồn tại");
+        }
+
+        if (!f.getUser().getUser_id().equals(user.getUser_id())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không được phép xóa");
+        }
+
+        folderRepository.deleteById(folderId);
+        return ResponseEntity.ok("Xóa folder thành công");
+    }
+
+
 }
