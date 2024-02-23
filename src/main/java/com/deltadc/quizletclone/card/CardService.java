@@ -61,6 +61,8 @@ public class CardService {
             return ResponseEntity.badRequest().build();
         }
         cardRepository.deleteById(id);
+        Set set = card.getSet();
+        set.removeCard(card); // Xóa Card ra khỏi Set
         return ResponseEntity.ok("Deleted!");
     }
 }
