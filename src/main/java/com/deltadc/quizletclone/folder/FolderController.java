@@ -42,6 +42,7 @@ public class FolderController {
         return ResponseEntity.ok(userFolderDTOs);
     }
 
+    // xóa folder dựa trên folderId
     @DeleteMapping("/{folder_id}")
     public ResponseEntity<String> deleteFolder(@PathVariable("folder_id") Long folderId) {
         return folderService.deleteFolder(folderId);

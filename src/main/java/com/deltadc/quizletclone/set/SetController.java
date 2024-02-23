@@ -47,6 +47,7 @@ public class SetController {
         return setService.getCardsInSet(setId, currentUserId);
     }
 
+    // lấy tất cả set của người dùng
     @GetMapping("/{user_id}/sets")
     public ResponseEntity<List<SetDTO>> getUserSets(@PathVariable("user_id") Long userId) {
         List<Set> userSets = userService.getUserSets(userId);
@@ -56,11 +57,13 @@ public class SetController {
         return ResponseEntity.ok(userSetDTOs);
     }
 
+    // tạo set mới
     @PostMapping("/create-set")
     public ResponseEntity<String> createSet(@RequestBody String json) {
         return setService.createSet(json);
     }
 
+    // xóa set dựa trên setId
     @DeleteMapping("/{setId}")
     public ResponseEntity<String> deleteSet(@PathVariable("setId") Long setId) {
         return setService.deleteSet(setId);

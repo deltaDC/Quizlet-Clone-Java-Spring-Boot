@@ -94,7 +94,7 @@ public class SetService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set không tồn tại");
         }
 
-        if ( !s.getUser().getUser_id().equals(user.getUser_id())) {
+        if (!s.getUser().getUser_id().equals(user.getUser_id())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không được phép xóa");
         }
 
