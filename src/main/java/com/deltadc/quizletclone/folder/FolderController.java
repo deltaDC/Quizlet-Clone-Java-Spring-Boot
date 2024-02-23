@@ -41,4 +41,9 @@ public class FolderController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userFolderDTOs);
     }
+
+    @DeleteMapping("/{folder_id}")
+    public ResponseEntity<String> deleteFolder(@PathVariable("folder_id") Long folderId) {
+        return folderService.deleteFolder(folderId);
+    }
 }
