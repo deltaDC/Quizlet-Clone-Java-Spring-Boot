@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,8 +17,13 @@ public class CardService {
     private final SetRepository setRepository;
 
     // Các phương thức xử lý Card
-    public ResponseEntity<List<Card>> getAllCards() {
-        return ResponseEntity.ok(cardRepository.findAll());
+    public ResponseEntity<?> getAllCards() {
+        List<Card> cards = cardRepository.findAll();
+        List<CardDTO> cardDTOS = new ArrayList<>();
+        for (Card card : cards) {
+            cardDTOS.add(new CardDTO(card));
+        }
+        return ResponseEntity.ok(cardDTOS);
     }
 
     public ResponseEntity<?> getCardById(Long id) {
@@ -25,7 +31,8 @@ public class CardService {
         if (card == null) {
             return ResponseEntity.badRequest().body("Cannot find this card!");
         }
-        return ResponseEntity.ok(card);
+        CardDTO cardDTO = new CardDTO(card);
+        return ResponseEntity.ok(cardDTO);
     }
 
     // Lấy tất cả cards trong 1 set
@@ -35,7 +42,11 @@ public class CardService {
             return ResponseEntity.badRequest().body("Cannot find this set!");
         }
         List<Card> cards = set.getCards();
-        return ResponseEntity.ok(cards);
+        List<CardDTO> cardDTOS = new ArrayList<>();
+        for (Card card : cards) {
+            cardDTOS.add(new CardDTO(card));
+        }
+        return ResponseEntity.ok(cardDTOS);
     }
 
     public ResponseEntity<?> createCard(Card card, Long set_id) {
