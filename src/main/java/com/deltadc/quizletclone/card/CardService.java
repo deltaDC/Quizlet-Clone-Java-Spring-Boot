@@ -28,6 +28,16 @@ public class CardService {
         return ResponseEntity.ok(card);
     }
 
+    // Lấy tất cả cards trong 1 set
+    public ResponseEntity<?> getCardsInSet(Long set_id) {
+        Set set = setRepository.findById(set_id).orElse(null);
+        if (set == null) {
+            return ResponseEntity.badRequest().body("Cannot find this set!");
+        }
+        List<Card> cards = set.getCards();
+        return ResponseEntity.ok(cards);
+    }
+
     public ResponseEntity<?> createCard(Card card, Long set_id) {
         Set set = setRepository.findById(set_id).orElse(null);
         if (set == null) {
