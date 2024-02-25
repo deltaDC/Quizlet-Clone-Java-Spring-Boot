@@ -81,9 +81,9 @@ public class CardService {
         if (card == null) {
             return ResponseEntity.badRequest().build();
         }
-        cardRepository.deleteById(id);
         Set set = card.getSet();
         set.removeCard(card); // Xóa Card ra khỏi Set
+        cardRepository.deleteById(id);
         return ResponseEntity.ok("Deleted!");
     }
 }
