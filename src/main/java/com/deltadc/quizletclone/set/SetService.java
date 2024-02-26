@@ -42,7 +42,7 @@ public class SetService {
         return ResponseEntity.ok(cards);
     }
 
-    public ResponseEntity<String> createSet(@RequestBody String json) {
+    public ResponseEntity<?> createSet(@RequestBody String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(json);
@@ -68,9 +68,10 @@ public class SetService {
             createdSet.setPublic(isPublic);
             createdSet.setUser(user);
 
-            setRepository.save(createdSet);
+            Set savedSet = setRepository.save(createdSet);
 
-            return ResponseEntity.ok("Tạo set thành công");
+            // Trả về đối tượng set vừa được tạo trong phản hồi ResponseEntity
+            return ResponseEntity.ok(savedSet);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo set");
@@ -81,7 +82,6 @@ public class SetService {
         // Trích xuất thông tin người dùng từ JWT
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-
 
         // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
         User user = userRepository.findByEmail(username).orElse(null);

@@ -1,11 +1,9 @@
 package com.deltadc.quizletclone.set;
 
 
-import com.deltadc.quizletclone.card.Card;
 import com.deltadc.quizletclone.config.JwtService;
 import com.deltadc.quizletclone.user.UserRepository;
 import com.deltadc.quizletclone.user.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,19 +31,19 @@ public class SetController {
         return setDTO;
     }
 
-    @GetMapping("/{setId}")
-    public ResponseEntity<List<Card>> getCardsInSet(@PathVariable Long setId, HttpServletRequest request) {
-        // Lấy JWT token từ request
-        String jwtToken = jwtService.extractTokenFromRequest(request);
-
-        // Lấy email người dùng từ JWT token
-        String currentUserEmail = jwtService.extractUsername(jwtToken);
-
-        String currentUserId = String.valueOf(userRepository.findByEmail(currentUserEmail));
-
-        // Lấy danh sách card trong set cho người dùng hiện tại và trả về
-        return setService.getCardsInSet(setId, currentUserId);
-    }
+//    @GetMapping("/{setId}")
+//    public ResponseEntity<List<Card>> getCardsInSet(@PathVariable Long setId, HttpServletRequest request) {
+//        // Lấy JWT token từ request
+//        String jwtToken = jwtService.extractTokenFromRequest(request);
+//
+//        // Lấy email người dùng từ JWT token
+//        String currentUserEmail = jwtService.extractUsername(jwtToken);
+//
+//        String currentUserId = String.valueOf(userRepository.findByEmail(currentUserEmail));
+//
+//        // Lấy danh sách card trong set cho người dùng hiện tại và trả về
+//        return setService.getCardsInSet(setId, currentUserId);
+//    }
 
     // lấy tất cả set của người dùng
     @GetMapping("/{user_id}/sets")
@@ -59,7 +57,7 @@ public class SetController {
 
     // tạo set mới
     @PostMapping("/create-set")
-    public ResponseEntity<String> createSet(@RequestBody String json) {
+    public ResponseEntity<?> createSet(@RequestBody String json) {
         return setService.createSet(json);
     }
 

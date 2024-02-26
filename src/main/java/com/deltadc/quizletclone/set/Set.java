@@ -13,7 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -45,7 +44,7 @@ public class Set {
     private boolean isPublic;
 
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
-    private List<Card> cards = new ArrayList<>();
+    private List<Card> cards;
 
 //    @ManyToMany(mappedBy = "set")
 //    private List<Folder> folders;
