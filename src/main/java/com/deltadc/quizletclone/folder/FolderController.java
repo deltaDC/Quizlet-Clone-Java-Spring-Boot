@@ -28,7 +28,7 @@ public class FolderController {
 
     //tạo folder mới
     @PostMapping("/create-folder")
-    public ResponseEntity<String> createFolder(@RequestBody String json) {
+    public ResponseEntity<?> createFolder(@RequestBody String json) {
         return folderService.createFolder(json);
     }
 

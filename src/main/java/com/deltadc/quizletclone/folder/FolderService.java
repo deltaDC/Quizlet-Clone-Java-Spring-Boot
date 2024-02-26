@@ -17,7 +17,7 @@ public class FolderService {
     private final UserRepository userRepository;
     private final FolderRepository folderRepository;
 
-    public ResponseEntity<String> createFolder(String json) {
+    public ResponseEntity<?> createFolder(String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(json);
@@ -43,9 +43,16 @@ public class FolderService {
             createdFolder.setPublic(isPublic);
             createdFolder.setUser(user);
 
-            folderRepository.save(createdFolder);
+            Folder savedFolder = folderRepository.save(createdFolder);
+            FolderDTO folderDTO = new FolderDTO();
+            folderDTO.setFolderId(savedFolder.getFolder_id());
+            folderDTO.setTitle(savedFolder.getTitle());
+            folderDTO.setDescription(savedFolder.getDescription());
+            folderDTO.setCreatedAt(savedFolder.getCreatedAt());
+            folderDTO.setUpdatedAt(savedFolder.getUpdatedAt());
+            folderDTO.setPublic(savedFolder.isPublic());
 
-            return ResponseEntity.ok("Tạo folder thành công");
+            return ResponseEntity.ok(folderDTO);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo folder");
