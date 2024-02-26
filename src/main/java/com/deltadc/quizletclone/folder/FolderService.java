@@ -1,5 +1,10 @@
 package com.deltadc.quizletclone.folder;
 
+import com.deltadc.quizletclone.folderset.FolderSet;
+import com.deltadc.quizletclone.folderset.FolderSetRepository;
+import com.deltadc.quizletclone.set.Set;
+import com.deltadc.quizletclone.set.SetController;
+import com.deltadc.quizletclone.set.SetDTO;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,11 +16,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FolderService {
     private final UserRepository userRepository;
     private final FolderRepository folderRepository;
+    private final FolderSetRepository folderSetRepository;
+    private final SetController setController;
 
     public ResponseEntity<?> createFolder(String json) {
         try {
@@ -85,4 +95,17 @@ public class FolderService {
     }
 
 
+    public ResponseEntity<?> getSetsInFolder(Long folderId) {
+        List<FolderSet> fsList = folderSetRepository.findByFolderId(folderId);
+
+        List<SetDTO> setDTOList = new ArrayList<>();
+        for(FolderSet fs : fsList) {
+            //System.out.println(fs.getFolder_set_id() + " " + fs.getFolder().getFolder_id() + " " + fs.getSet().getSet_id());
+            Set s = fs.getSet();
+            SetDTO sDTO = setController.convertToDTO(s);
+            setDTOList.add(sDTO);
+        }
+
+        return ResponseEntity.ok(setDTOList);
+    }
 }

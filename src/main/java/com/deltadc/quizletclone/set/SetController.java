@@ -20,7 +20,7 @@ public class SetController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    private SetDTO convertToDTO(Set set) {
+    public SetDTO convertToDTO(Set set) {
         SetDTO setDTO = new SetDTO();
         setDTO.setSetId(set.getSet_id());
         setDTO.setTitle(set.getTitle());

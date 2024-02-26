@@ -47,4 +47,10 @@ public class FolderController {
     public ResponseEntity<String> deleteFolder(@PathVariable("folder_id") Long folderId) {
         return folderService.deleteFolder(folderId);
     }
+
+    //lấy tất cả các set trong một folder dựa trên folderId
+    @GetMapping("/{folder_id}/sets")
+    public ResponseEntity<?> getSetsInFolder(@PathVariable("folder_id") Long folderId) {
+        return folderService.getSetsInFolder(folderId);
+    }
 }
