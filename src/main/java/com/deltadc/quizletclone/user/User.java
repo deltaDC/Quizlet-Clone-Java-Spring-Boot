@@ -4,6 +4,7 @@ package com.deltadc.quizletclone.user;
 import com.deltadc.quizletclone.folder.Folder;
 import com.deltadc.quizletclone.review.Review;
 import com.deltadc.quizletclone.set.Set;
+import com.deltadc.quizletclone.studysession.StudySession;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,8 +46,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Folder> folders;
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<StudySession> studySessions;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<StudySession> studySessions;
 
     @Enumerated(EnumType.STRING)
     private Role role;
