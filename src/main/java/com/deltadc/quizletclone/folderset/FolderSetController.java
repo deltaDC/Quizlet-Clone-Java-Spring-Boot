@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/folderset")
+@CrossOrigin(origins = "http://localhost:3000")
 public class FolderSetController {
     private final FolderSetService folderSetService;
 
