@@ -1,6 +1,5 @@
 package com.deltadc.quizletclone.card;
 
-import com.deltadc.quizletclone.cardresponse.CardResponse;
 import com.deltadc.quizletclone.set.Set;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @NoArgsConstructor
@@ -27,9 +25,6 @@ public class Card {
     @JoinColumn(name = "set_id")
     private Set set;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private CardResponse cardResponse;
-
     private String front_text;
 
     private String back_text;
@@ -37,6 +32,8 @@ public class Card {
     private String created_at;
 
     private String updated_at;
+
+    private boolean is_known = false;
 
     @PrePersist
     protected void onCreate() {
