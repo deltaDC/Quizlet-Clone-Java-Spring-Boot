@@ -54,6 +54,7 @@ public class CardService {
         if (set == null) {
             return ResponseEntity.badRequest().body("Cannot find this set!");
         }
+        card.set_known(false);
         card.setFront_text(card.getFront_text());
         card.setBack_text(card.getBack_text());
         card.setSet(set);

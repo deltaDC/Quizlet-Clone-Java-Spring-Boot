@@ -19,6 +19,8 @@ public class CardDTO {
     private String created_at;
 
     private String updated_at;
+
+    private boolean is_known;
     public CardDTO(Card card) {
         this.card_id = card.getCard_id();
         this.set_id = card.getSet().getSet_id();
@@ -26,5 +28,6 @@ public class CardDTO {
         this.back_text = card.getBack_text();
         this.created_at = card.getCreated_at();
         this.updated_at = card.getUpdated_at();
+        this.is_known = card.is_known();
     }
 }
