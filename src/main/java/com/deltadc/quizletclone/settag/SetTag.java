@@ -29,4 +29,5 @@ public class SetTag {
     @JoinColumn(name = "set_id", nullable = false, unique = true)
     private Set set;
 
+
 }
