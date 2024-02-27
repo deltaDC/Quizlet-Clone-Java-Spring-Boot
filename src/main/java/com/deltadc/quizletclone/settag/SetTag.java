@@ -28,6 +28,4 @@ public class SetTag {
     @OneToOne
     @JoinColumn(name = "set_id", nullable = false, unique = true)
     private Set set;
-
-
 }
