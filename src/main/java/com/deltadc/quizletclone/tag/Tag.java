@@ -1,6 +1,5 @@
 package com.deltadc.quizletclone.tag;
 
-import com.deltadc.quizletclone.settag.SetTag;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +20,4 @@ public class Tag {
     private Long tag_id;
 
     private String name;
-
-    @OneToOne
-    @JoinColumn
-    private SetTag setTag;
 }
