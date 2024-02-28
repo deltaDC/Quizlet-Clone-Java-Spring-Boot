@@ -1,10 +1,13 @@
 package com.deltadc.quizletclone.tag;
 
+import com.deltadc.quizletclone.settag.SetTag;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder

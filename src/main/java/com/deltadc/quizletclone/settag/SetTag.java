@@ -21,13 +21,11 @@ public class SetTag {
     @Column(name = "set_tag_id")
     private Long set_tag_id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
     @OneToOne
     @JoinColumn(name = "set_id", nullable = false, unique = true)
     private Set set;
-
-
 }
