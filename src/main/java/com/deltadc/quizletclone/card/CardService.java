@@ -62,7 +62,7 @@ public class CardService {
         card.onUpdate();
         cardRepository.save(card);
         set.addCard(card);      // Thêm card vào trong set
-        return ResponseEntity.ok("Created card!");
+        return ResponseEntity.ok(new CardDTO(card));
     }
 
     public ResponseEntity<?> updateCard(Long id, Card updatedCard) {
@@ -71,8 +71,8 @@ public class CardService {
             existingCard.setFront_text(updatedCard.getFront_text());
             existingCard.setBack_text(updatedCard.getBack_text());
             existingCard.onUpdate();
-            cardRepository.save(existingCard);
-            return ResponseEntity.ok("Updated card!");
+            cardRepository.save(existingCard    );
+            return ResponseEntity.ok(new CardDTO(existingCard));
         }
         return ResponseEntity.badRequest().body("Cannot find card");
     }
