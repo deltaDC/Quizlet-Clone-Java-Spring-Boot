@@ -3,6 +3,8 @@ package com.deltadc.quizletclone.card;
 import  com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.set.SetRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,16 +38,26 @@ public class CardService {
     }
 
     // Lấy tất cả cards trong 1 set
-    public ResponseEntity<?> getCardsInSet(Long set_id) {
+//    public ResponseEntity<?> getCardsInSet(Long set_id) {
+//        Set set = setRepository.findById(set_id).orElse(null);
+//        if (set == null) {
+//            return ResponseEntity.badRequest().body("Cannot find this set!");
+//        }
+//        List<Card> cards = set.getCards();
+//        List<CardDTO> cardDTOS = new ArrayList<>();
+//        for (Card card : cards) {
+//            cardDTOS.add(new CardDTO(card));
+//        }
+//        return ResponseEntity.ok(cardDTOS);
+//    }
+
+    public ResponseEntity<?> getCardsInSet(Long set_id, int page, int size) {
         Set set = setRepository.findById(set_id).orElse(null);
         if (set == null) {
             return ResponseEntity.badRequest().body("Cannot find this set!");
         }
-        List<Card> cards = set.getCards();
-        List<CardDTO> cardDTOS = new ArrayList<>();
-        for (Card card : cards) {
-            cardDTOS.add(new CardDTO(card));
-        }
+        Page<Card> cards = cardRepository.findCardsBySetId(set_id, PageRequest.of(page, size));
+        Page<CardDTO> cardDTOS = cards.map(CardDTO::new);
         return ResponseEntity.ok(cardDTOS);
     }
 
