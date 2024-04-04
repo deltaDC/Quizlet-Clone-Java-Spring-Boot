@@ -45,8 +45,8 @@ public class FolderController {
     }
 
     //lấy toàn bộ folder của người dùng dựa trên user_id
-    @GetMapping("/{user_id}/folders")
-    public ResponseEntity<List<FolderDTO>> getUserFolders(@PathVariable("user_id") Long userId) {
+    @GetMapping("/{userId}/folders")
+    public ResponseEntity<List<FolderDTO>> getUserFolders(@PathVariable("userId") Long userId) {
         List<Folder> userFolders = folderService.getUserFolders(userId);
         List<FolderDTO> userFolderDTOs = userFolders.stream()
                 .map(this::convertToDTO)
@@ -55,14 +55,20 @@ public class FolderController {
     }
 
     // xóa folder dựa trên folderId
-    @DeleteMapping("/{folder_id}")
-    public ResponseEntity<String> deleteFolder(@PathVariable("folder_id") Long folderId) {
+    @DeleteMapping("/{folderId}")
+    public ResponseEntity<String> deleteFolder(@PathVariable("folderId") Long folderId) {
         return folderService.deleteFolder(folderId);
     }
 
     //lấy tất cả các set trong một folder dựa trên folderId
-    @GetMapping("/{folder_id}/sets")
-    public ResponseEntity<?> getSetsInFolder(@PathVariable("folder_id") Long folderId) {
+    @GetMapping("/{folderId}/sets")
+    public ResponseEntity<?> getSetsInFolder(@PathVariable("folderId") Long folderId) {
         return folderService.getSetsInFolder(folderId);
+    }
+
+    //edit folder theo folderId
+    @PutMapping("/edit/{folderId}")
+    public ResponseEntity<?> editFolderById(@PathVariable("folderId") Long folderId, @RequestBody Folder newFolder) {
+        return folderService.editFolderById(folderId, newFolder);
     }
 }

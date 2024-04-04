@@ -101,9 +101,18 @@ public class FolderService {
     //tra ve toan bo folder cua user theo userId
     public List<Folder> getUserFolders(Long userId) {
         // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
-        List<Folder> userFolders = folderRepository.findByUserId(userId);
+        return folderRepository.findByUserId(userId);
+    }
 
-        // Trả về danh sách các set cho frontend
-        return userFolders;
+    public ResponseEntity<?> editFolderById(Long folderId, Folder newFolder) {
+        Folder folder = folderRepository.findById(folderId).orElseThrow();
+
+        folder.setTitle(newFolder.getTitle());
+        folder.setDescription(newFolder.getDescription());
+        folder.setPublic(newFolder.isPublic());
+
+        folderRepository.save(folder);
+
+        return ResponseEntity.ok(folder);
     }
 }
