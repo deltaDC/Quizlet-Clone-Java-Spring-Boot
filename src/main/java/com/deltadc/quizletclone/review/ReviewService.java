@@ -1,16 +1,10 @@
 package com.deltadc.quizletclone.review;
 
-import com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.set.SetRepository;
-import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,47 +34,68 @@ public class ReviewService {
     }
 
 
-    public ResponseEntity<String> postSetReviews(@PathVariable Long setId, @RequestBody String json) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(json);
+    public ResponseEntity<?> postSetReviews(@PathVariable Long setId, @RequestBody Review review) {
+        // Trích xuất thông tin người dùng từ JWT
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        String username = userDetails.getUsername();
+//
+//        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
+//        User user = userRepository.findByEmail(username).orElse(null);
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
+//        }
+//        Long userId = user.getUser_id();
+//
+//        // Tìm setId đó có tồn tại hay không
+//        Set s = setRepository.findById(setId).orElse(null);
+//        if (s == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SetId không tồn tại");
+//        }
+        Long userId = review.getUser_id();
 
-            Integer total_stars = node.get("total_stars").asInt();
-
-            // Trích xuất thông tin người dùng từ JWT
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String username = userDetails.getUsername();
-
-            // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-            User user = userRepository.findByEmail(username).orElse(null);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
-            }
-            Long userId = user.getUser_id();
-
-            // Tìm setId đó có tồn tại hay không
-            Set s = setRepository.findById(setId).orElse(null);
-            if (s == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SetId không tồn tại");
-            }
-
-            // Kiểm tra xem user đã review set này trước đó chưa
-            boolean hasReviewed = reviewRepository.existsBySetIdAndUserId(setId, userId);
-            if (hasReviewed) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng đã review set này trước đó");
-            }
-
-            Review createdReview = new Review();
-            createdReview.setSet(s);
-            createdReview.setUser(user);
-            createdReview.setTotalStars(total_stars);
-
-            reviewRepository.save(createdReview);
-
-            return ResponseEntity.ok("Tạo review thành công");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo review");
+        // Kiểm tra xem user đã review set này trước đó chưa
+        boolean hasReviewed = reviewRepository.existsBySetIdAndUserId(setId, userId);
+        if (hasReviewed) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng đã review set này trước đó");
         }
+
+        Review createdReview = new Review();
+        createdReview.setSet_id(review.getSet_id());
+        createdReview.setUser_id(review.getUser_id());
+        createdReview.setTotalStars(review.getTotalStars());
+
+        reviewRepository.save(createdReview);
+
+        return ResponseEntity.ok(createdReview);
+    }
+
+    public ResponseEntity<?> getAllReviews() {
+        List<Review> reviews = reviewRepository.findAll();
+
+        return ResponseEntity.ok(reviews);
+    }
+
+    public ResponseEntity<?> getReviewsByUserId(Long userId) {
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+
+        return ResponseEntity.ok(reviews);
+    }
+
+    public ResponseEntity<?> editReviewById(Long reviewId, Review newReview) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+
+        review.setTotalStars(newReview.getTotalStars());
+
+        reviewRepository.save(review);
+
+        return ResponseEntity.ok(review);
+    }
+
+    public ResponseEntity<?> deleteReviewById(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+
+        reviewRepository.delete(review);
+
+        return ResponseEntity.ok("da xoa review");
     }
 }

@@ -24,15 +24,18 @@ public class Review {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private User user;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "set_id", nullable = false)
+    @JoinColumn(name = "set_id", nullable = false, insertable = false, updatable = false)
     private Set set;
 
     @Column(name = "total_stars", nullable = false)
     private int totalStars;
+
+    private Long set_id;
+    private Long user_id;
 
 }

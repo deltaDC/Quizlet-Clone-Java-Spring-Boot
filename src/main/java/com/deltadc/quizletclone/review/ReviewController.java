@@ -18,10 +18,34 @@ public class ReviewController {
         return reviewService.getSetAverageRating(setId);
     }
 
-
     // tạo một review mới
     @PostMapping("/sets/{set_id}/review")
-    public ResponseEntity<String> postSetReviews(@PathVariable("set_id") Long setId, @RequestBody String json) {
-        return reviewService.postSetReviews(setId, json);
+    public ResponseEntity<?> postSetReviews(@PathVariable("set_id") Long setId, @RequestBody Review review) {
+        return reviewService.postSetReviews(setId, review);
     }
+
+    //lay tat ca cac review
+    @GetMapping("/get-all-reviews")
+    public ResponseEntity<?> getAllReviews() {
+        return reviewService.getAllReviews();
+    }
+
+    //lay tat ca review theo userId
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getReviewsByUserId(@PathVariable("userId") Long userId) {
+        return reviewService.getReviewsByUserId(userId);
+    }
+
+    //sua mot review theo id
+    @PutMapping("/edit/{reviewId}")
+    public ResponseEntity<?> editReviewById(@PathVariable("reviewId") Long reviewId, @RequestBody Review newReview) {
+        return reviewService.editReviewById(reviewId, newReview);
+    }
+
+    //xoa mot review theo id
+    @DeleteMapping("/delete/{reviewId}")
+    public ResponseEntity<?> deleteReviewById(@PathVariable("reviewId") Long reviewId) {
+        return reviewService.deleteReviewById(reviewId);
+    }
+
 }
