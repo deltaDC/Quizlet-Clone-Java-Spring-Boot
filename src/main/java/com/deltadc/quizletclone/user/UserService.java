@@ -33,4 +33,13 @@ public class UserService {
 
         return ResponseEntity.ok("da xoa user " + userId);
     }
+
+    public ResponseEntity<?> changeUserPassWordById(Long userId, User newUser) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.setPassword(newUser.getPassword());
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok(user);
+    }
 }

@@ -23,4 +23,10 @@ public class UserController {
     public ResponseEntity<?> deleteUserById(@PathVariable("userId") Long userId) {
         return userService.deleteUserById(userId);
     }
+
+    //edit mat khau cua 1 user theo userId
+    @PutMapping("/change-password/{userId}")
+    public ResponseEntity<?> changeUserPassWordById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+        return userService.changeUserPassWordById(userId, newUser);
+    }
 }
