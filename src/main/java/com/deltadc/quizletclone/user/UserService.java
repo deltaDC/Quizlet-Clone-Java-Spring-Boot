@@ -25,4 +25,12 @@ public class UserService {
 
         return ResponseEntity.ok(userList);
     }
+
+    public ResponseEntity<?> deleteUserById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+
+        userRepository.delete(user);
+
+        return ResponseEntity.ok("da xoa user " + userId);
+    }
 }

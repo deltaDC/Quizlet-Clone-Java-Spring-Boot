@@ -4,6 +4,7 @@ package com.deltadc.quizletclone.user;
 import com.deltadc.quizletclone.folder.Folder;
 import com.deltadc.quizletclone.review.Review;
 import com.deltadc.quizletclone.set.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,16 +38,16 @@ public class User implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Set> sets;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Folder> folders;
-
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<StudySession> studySessions;
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -2,10 +2,7 @@ package com.deltadc.quizletclone.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController // danh dau class nay la RESTful Controller
 @RequiredArgsConstructor // tự động tạo một constructor chứa tất cả các trường được đánh dấu là final hoặc @NonNull.
@@ -19,5 +16,11 @@ public class UserController {
     @GetMapping("/get-all-users")
     public ResponseEntity<?> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    //xoa user theo id
+    @DeleteMapping("/delete-user/{userId}")
+    public ResponseEntity<?> deleteUserById(@PathVariable("userId") Long userId) {
+        return userService.deleteUserById(userId);
     }
 }
