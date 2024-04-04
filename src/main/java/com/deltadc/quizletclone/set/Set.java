@@ -45,18 +45,22 @@ public class Set {
 
     private boolean isPublic;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<Card> cards;
 
 //    @ManyToMany(mappedBy = "set")
 //    private List<Folder> folders;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "set", cascade = CascadeType.ALL)
     private SetTag setTag;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<FolderSet> folderSets;
 

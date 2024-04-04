@@ -52,9 +52,14 @@ public class SetController {
     }
 
     //lay toan bo cac set
-    @GetMapping("get-all-sets")
+    @GetMapping("/get-all-sets")
     public ResponseEntity<?> getAllSets() {
         return setService.getAllSets();
     }
 
+    //edit mot set theo setId
+    @PutMapping("/edit/{setId}")
+    public ResponseEntity<?> editSetById(@PathVariable("setId") Long setId, @RequestBody Set newSet) {
+        return setService.editSetById(setId, newSet);
+    }
 }
