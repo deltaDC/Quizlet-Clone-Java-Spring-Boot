@@ -42,6 +42,15 @@ public class SetService {
         return ResponseEntity.ok(cards);
     }
 
+    //tra ve toan bo set cua nguoi dung theo userId
+    public List<Set> getUserSets(Long userId) {
+        // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
+        List<Set> userSets = setRepository.findByUserId(userId);
+
+        // Trả về danh sách các set cho frontend
+        return userSets;
+    }
+
     public ResponseEntity<?> createSet(@RequestBody String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();

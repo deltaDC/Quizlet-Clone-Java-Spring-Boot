@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:3000")
 public class FolderController {
     private final FolderService folderService;
-    private final UserService userService;
 
     private FolderDTO convertToDTO(Folder folder) {
         FolderDTO folderDTO = new FolderDTO();
@@ -36,7 +35,7 @@ public class FolderController {
     //lấy toàn bộ folder của người dùng dựa trên user_id
     @GetMapping("/{user_id}/folders")
     public ResponseEntity<List<FolderDTO>> getUserFolders(@PathVariable("user_id") Long userId) {
-        List<Folder> userFolders = userService.getUserFolders(userId);
+        List<Folder> userFolders = folderService.getUserFolders(userId);
         List<FolderDTO> userFolderDTOs = userFolders.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

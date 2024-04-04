@@ -16,10 +16,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/set")
 @CrossOrigin(origins = "http://localhost:3000")
 public class SetController {
-    private final UserService userService;
     private final SetService setService;
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
 
     public SetDTO convertToDTO(Set set) {
         SetDTO setDTO = new SetDTO();
@@ -32,24 +29,10 @@ public class SetController {
         return setDTO;
     }
 
-//    @GetMapping("/{setId}")
-//    public ResponseEntity<List<Card>> getCardsInSet(@PathVariable Long setId, HttpServletRequest request) {
-//        // Lấy JWT token từ request
-//        String jwtToken = jwtService.extractTokenFromRequest(request);
-//
-//        // Lấy email người dùng từ JWT token
-//        String currentUserEmail = jwtService.extractUsername(jwtToken);
-//
-//        String currentUserId = String.valueOf(userRepository.findByEmail(currentUserEmail));
-//
-//        // Lấy danh sách card trong set cho người dùng hiện tại và trả về
-//        return setService.getCardsInSet(setId, currentUserId);
-//    }
-
     // lấy tất cả set của người dùng
     @GetMapping("/{user_id}/sets")
     public ResponseEntity<List<SetDTO>> getUserSets(@PathVariable("user_id") Long userId) {
-        List<Set> userSets = userService.getUserSets(userId);
+        List<Set> userSets = setService.getUserSets(userId);
         List<SetDTO> userSetDTOs = userSets.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

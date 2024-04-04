@@ -108,4 +108,13 @@ public class FolderService {
 
         return ResponseEntity.ok(setDTOList);
     }
+
+    //tra ve toan bo folder cua user theo userId
+    public List<Folder> getUserFolders(Long userId) {
+        // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
+        List<Folder> userFolders = folderRepository.findByUserId(userId);
+
+        // Trả về danh sách các set cho frontend
+        return userFolders;
+    }
 }
