@@ -27,46 +27,35 @@ public class FolderService {
     private final FolderSetRepository folderSetRepository;
     private final SetController setController;
 
-    public ResponseEntity<?> createFolder(String json) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(json);
+    public ResponseEntity<?> createFolder(Folder folder) {
+        Folder createdFolder = new Folder();
+        createdFolder.setTitle(folder.getTitle());
+        createdFolder.setDescription(folder.getDescription());
+        createdFolder.setPublic(folder.isPublic());
+        createdFolder.setUser_id(folder.getUser_id());
 
-            String title = node.get("title").asText();
-            String description = node.get("description").asText();
-            boolean isPublic = node.get("is_public").asBoolean();
+        Folder savedFolder = folderRepository.save(createdFolder);
+//        FolderDTO folderDTO = new FolderDTO();
+//        folderDTO.setFolderId(savedFolder.getFolder_id());
+//        folderDTO.setTitle(savedFolder.getTitle());
+//        folderDTO.setDescription(savedFolder.getDescription());
+//        folderDTO.setCreatedAt(savedFolder.getCreatedAt());
+//        folderDTO.setUpdatedAt(savedFolder.getUpdatedAt());
+//        folderDTO.setPublic(savedFolder.isPublic());
 
-            // Trích xuất thông tin người dùng từ JWT
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String username = userDetails.getUsername();
+        return ResponseEntity.ok(savedFolder);
+    }
 
+    public ResponseEntity<?> getAllFolders() {
+        List<Folder> folders = folderRepository.findAll();
 
-            // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-            User user = userRepository.findByEmail(username).orElse(null);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
-            }
+        return ResponseEntity.ok(folders);
+    }
 
-            Folder createdFolder = new Folder();
-            createdFolder.setTitle(title);
-            createdFolder.setDescription(description);
-            createdFolder.setPublic(isPublic);
-            createdFolder.setUser(user);
+    public ResponseEntity<?> getPublicFolders() {
+        List<Folder> publicFolders = folderRepository.findByIsPublic(true);
 
-            Folder savedFolder = folderRepository.save(createdFolder);
-            FolderDTO folderDTO = new FolderDTO();
-            folderDTO.setFolderId(savedFolder.getFolder_id());
-            folderDTO.setTitle(savedFolder.getTitle());
-            folderDTO.setDescription(savedFolder.getDescription());
-            folderDTO.setCreatedAt(savedFolder.getCreatedAt());
-            folderDTO.setUpdatedAt(savedFolder.getUpdatedAt());
-            folderDTO.setPublic(savedFolder.isPublic());
-
-            return ResponseEntity.ok(folderDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo folder");
-        }
+        return ResponseEntity.ok(publicFolders);
     }
 
     public ResponseEntity<String> deleteFolder(Long folderId) {

@@ -28,8 +28,20 @@ public class FolderController {
 
     //tạo folder mới
     @PostMapping("/create-folder")
-    public ResponseEntity<?> createFolder(@RequestBody String json) {
-        return folderService.createFolder(json);
+    public ResponseEntity<?> createFolder(@RequestBody Folder folder) {
+        return folderService.createFolder(folder);
+    }
+
+    //lay toan bo cac folder hien co
+    @GetMapping("/get-all-folders")
+    public ResponseEntity<?> getAllFolders() {
+        return folderService.getAllFolders();
+    }
+
+    //lay toan bo public folder
+    @GetMapping("/get-public-folders")
+    public ResponseEntity<?> getPublicFolders() {
+        return folderService.getPublicFolders();
     }
 
     //lấy toàn bộ folder của người dùng dựa trên user_id

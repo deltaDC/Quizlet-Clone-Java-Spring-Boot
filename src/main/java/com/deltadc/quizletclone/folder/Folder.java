@@ -2,6 +2,7 @@ package com.deltadc.quizletclone.folder;
 
 import com.deltadc.quizletclone.folderset.FolderSet;
 import com.deltadc.quizletclone.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +26,11 @@ public class Folder {
     private Long folder_id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private User user;
+
+    private Long user_id;
 
     private String title;
 
@@ -39,6 +43,7 @@ public class Folder {
     private boolean isPublic;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<FolderSet> folderSets;
 
     @PrePersist
