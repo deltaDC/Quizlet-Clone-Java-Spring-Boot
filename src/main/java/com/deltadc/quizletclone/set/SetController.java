@@ -29,9 +29,15 @@ public class SetController {
         return setDTO;
     }
 
-    // lấy tất cả set của người dùng
+    // tạo set mới
+    @PostMapping("/create-set")
+    public ResponseEntity<?> createSet(@RequestBody Set set) {
+        return setService.createSet(set);
+    }
+
+    // lấy tất cả set của người dùng theo userId
     @GetMapping("/{user_id}/sets")
-    public ResponseEntity<List<SetDTO>> getUserSets(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<?> getUserSets(@PathVariable("user_id") Long userId) {
         List<Set> userSets = setService.getUserSets(userId);
         List<SetDTO> userSetDTOs = userSets.stream()
                 .map(this::convertToDTO)
@@ -39,15 +45,16 @@ public class SetController {
         return ResponseEntity.ok(userSetDTOs);
     }
 
-    // tạo set mới
-    @PostMapping("/create-set")
-    public ResponseEntity<?> createSet(@RequestBody String json) {
-        return setService.createSet(json);
-    }
-
     // xóa set dựa trên setId
     @DeleteMapping("/{setId}")
-    public ResponseEntity<String> deleteSet(@PathVariable("setId") Long setId) {
+    public ResponseEntity<?> deleteSet(@PathVariable("setId") Long setId) {
         return setService.deleteSet(setId);
     }
+
+    //lay toan bo cac set
+    @GetMapping("get-all-sets")
+    public ResponseEntity<?> getAllSets() {
+        return setService.getAllSets();
+    }
+
 }

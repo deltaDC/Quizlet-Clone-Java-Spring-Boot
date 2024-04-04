@@ -22,24 +22,17 @@ public class SetService {
     private final SetRepository setRepository;
     private final UserRepository userRepository;
 
-    public ResponseEntity<List<Card>> getCardsInSet(Long setId, String userId) {
-        // Kiểm tra xem setId có tồn tại trong cơ sở dữ liệu không
-        Set set = setRepository.findById(setId).orElse(null);
-        if (set == null) {
-            // Nếu setId không tồn tại, trả về 404 Not Found
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> createSet(Set set) {
+        Set createdSet = new Set();
+        createdSet.setTitle(set.getTitle());
+        createdSet.setDescription(set.getDescription());
+        createdSet.setPublic(set.isPublic());
+        createdSet.setUser_id(set.getUser_id());
 
-        // Kiểm tra xem người dùng hiện tại có quyền truy cập vào set không
-        // so sánh userId của set với userId của người dùng
-        if (!set.getUser().getUser_id().toString().equals(userId)) {
-            // Nếu người dùng không có quyền truy cập vào set, trả về 403 Forbidden
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        Set savedSet = setRepository.save(createdSet);
 
-        // Nếu người dùng có quyền truy cập vào set, bạn có thể lấy danh sách card thuộc về set và trả về
-        List<Card> cards = set.getCards();
-        return ResponseEntity.ok(cards);
+        // Trả về đối tượng set vừa được tạo trong phản hồi ResponseEntity
+        return ResponseEntity.ok(savedSet);
     }
 
     //tra ve toan bo set cua nguoi dung theo userId
@@ -47,44 +40,7 @@ public class SetService {
         // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
         List<Set> userSets = setRepository.findByUserId(userId);
 
-        // Trả về danh sách các set cho frontend
         return userSets;
-    }
-
-    public ResponseEntity<?> createSet(@RequestBody String json) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(json);
-
-            String title = node.get("title").asText();
-            String description = node.get("description").asText();
-            boolean isPublic = node.get("is_public").asBoolean();
-
-            // Trích xuất thông tin người dùng từ JWT
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String username = userDetails.getUsername();
-
-
-            // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-            User user = userRepository.findByEmail(username).orElse(null);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
-            }
-
-            Set createdSet = new Set();
-            createdSet.setTitle(title);
-            createdSet.setDescription(description);
-            createdSet.setPublic(isPublic);
-            createdSet.setUser(user);
-
-            Set savedSet = setRepository.save(createdSet);
-
-            // Trả về đối tượng set vừa được tạo trong phản hồi ResponseEntity
-            return ResponseEntity.ok(savedSet);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể tạo set");
-        }
     }
 
     public ResponseEntity<String> deleteSet(@PathVariable Long setId) {
@@ -103,11 +59,18 @@ public class SetService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set không tồn tại");
         }
 
-        if (!s.getUser().getUser_id().equals(user.getUser_id())) {
+        if (!s.getUser_id().equals(user.getUser_id())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không được phép xóa");
         }
 
         setRepository.deleteById(setId);
         return ResponseEntity.ok("Xóa set thành công");
+    }
+
+    public ResponseEntity<?> getAllSets() {
+        List<Set> setList = setRepository.findAll();
+
+        return ResponseEntity.ok(setList);
+
     }
 }
