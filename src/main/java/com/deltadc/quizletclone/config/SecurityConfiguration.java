@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                 ) // session là stateless vì dùng token
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/auth/**").permitAll() // Cho phép tất cả mọi người truy cập
+                                .requestMatchers("/api/**").permitAll() // Cho phép tất cả mọi người truy cập
                                 .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)

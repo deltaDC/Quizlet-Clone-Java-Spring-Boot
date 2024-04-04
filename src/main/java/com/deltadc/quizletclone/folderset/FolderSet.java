@@ -2,6 +2,7 @@ package com.deltadc.quizletclone.folderset;
 
 import com.deltadc.quizletclone.folder.Folder;
 import com.deltadc.quizletclone.set.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,11 +23,16 @@ public class FolderSet {
     private Long folder_set_id;
 
     @ManyToOne
-    @JoinColumn(name = "folder_id", nullable = false)
+    @JoinColumn(name = "folder_id", insertable = false, updatable = false)
+    @JsonIgnore
     private Folder folder;
 
     @ManyToOne
-    @JoinColumn(name = "set_id", nullable = false)
+    @JsonIgnore
+    @JoinColumn(name = "set_id", insertable = false, updatable = false)
     private Set set;
+
+    private Long folder_id;
+    private Long set_id;
 
 }
