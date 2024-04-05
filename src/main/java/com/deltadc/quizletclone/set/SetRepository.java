@@ -10,4 +10,6 @@ import java.util.List;
 public interface SetRepository extends JpaRepository<Set, Long> {
     @Query("SELECT s FROM Set s WHERE s.user.user_id = :userId")
     List<Set> findByUserId(Long userId);
+
+    List<Set> findByIsPublic(boolean b);
 }

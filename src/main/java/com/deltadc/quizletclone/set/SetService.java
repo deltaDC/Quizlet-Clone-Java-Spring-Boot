@@ -81,4 +81,10 @@ public class SetService {
 
         return ResponseEntity.ok(set);
     }
+
+    public ResponseEntity<?> getPublicSet() {
+        List<Set> setList = setRepository.findByIsPublic(true);
+
+        return ResponseEntity.ok(setList);
+    }
 }

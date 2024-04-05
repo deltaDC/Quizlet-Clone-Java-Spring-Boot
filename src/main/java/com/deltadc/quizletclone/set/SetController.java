@@ -62,4 +62,10 @@ public class SetController {
     public ResponseEntity<?> editSetById(@PathVariable("setId") Long setId, @RequestBody Set newSet) {
         return setService.editSetById(setId, newSet);
     }
+
+    //lay tat ca cac public set
+    @GetMapping("/get-public-sets")
+    public ResponseEntity<?> getPublicSets() {
+        return setService.getPublicSet();
+    }
 }
