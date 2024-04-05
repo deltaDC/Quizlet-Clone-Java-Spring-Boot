@@ -1,6 +1,7 @@
 package com.deltadc.quizletclone.card;
 
 import com.deltadc.quizletclone.set.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,9 +23,12 @@ public class Card {
     @Column(name = "card_id")
     private Long card_id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "set_id")
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "set_id", insertable = false, updatable = false)
     private Set set;
+
+    private Long set_id;
 
     private String front_text;
 

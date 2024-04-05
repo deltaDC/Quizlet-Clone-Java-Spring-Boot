@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api/card")
 @CrossOrigin(origins = "http://localhost:3000")
 public class CardController {
     private final CardService cardService;
@@ -18,7 +19,7 @@ public class CardController {
     }
 
     // Lấy ra thông tin của 1 card theo id
-    @GetMapping("/cards/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getCardById(@PathVariable Long id) {
         return cardService.getCardById(id);
     }
@@ -36,13 +37,13 @@ public class CardController {
     }
 
     // Chỉnh sửa card theo id
-    @PutMapping("/cards/{id}")
+    @PutMapping("/edit/{id}")
     public ResponseEntity<?> updateCard(@PathVariable Long id, @RequestBody Card updatedCard) {
         return cardService.updateCard(id, updatedCard);
     }
 
     // Xóa card theo id
-    @DeleteMapping("/cards/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCard(@PathVariable Long id) {
         return cardService.deleteCard(id);
     }

@@ -66,15 +66,14 @@ public class CardService {
         if (set == null) {
             return ResponseEntity.badRequest().body("Cannot find this set!");
         }
-        card.set_known(false);
-        card.setFront_text(card.getFront_text());
-        card.setBack_text(card.getBack_text());
-        card.setSet(set);
-        card.onCreate();
-        card.onUpdate();
-        cardRepository.save(card);
-        set.addCard(card);      // Thêm card vào trong set
-        return ResponseEntity.ok(new CardDTO(card));
+        Card newCard = new Card();
+
+        newCard.set_known(false);
+        newCard.setFront_text(card.getFront_text());
+        newCard.setBack_text(card.getBack_text());
+        newCard.setSet_id(set.getSet_id());
+        cardRepository.save(newCard);
+        return ResponseEntity.ok(newCard);
     }
 
     public ResponseEntity<?> updateCard(Long id, Card updatedCard) {
@@ -95,7 +94,7 @@ public class CardService {
             return ResponseEntity.badRequest().build();
         }
         Set set = card.getSet();
-        set.removeCard(card); // Xóa Card ra khỏi Set
+//        set.removeCard(card); // Xóa Card ra khỏi Set
         cardRepository.deleteById(id);
         return ResponseEntity.ok("Deleted!");
     }
