@@ -27,7 +27,7 @@ public class TagService {
         Tag tag = new Tag();
         tag.setName(newTag.getName());
         tagRepository.save(newTag);
-        return ResponseEntity.ok("Created!");
+        return ResponseEntity.ok(tag);
     }
 
     // Update 1 tag
@@ -37,7 +37,8 @@ public class TagService {
             return ResponseEntity.badRequest().body("Cannot find this tag!");
         }
         tag.setName(newTag.getName());
-        return ResponseEntity.ok("Updated!");
+        tagRepository.save(tag);
+        return ResponseEntity.ok(tag);
     }
 
     // Xóa 1 tag

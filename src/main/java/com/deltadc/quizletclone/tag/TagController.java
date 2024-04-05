@@ -6,17 +6,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api/tag")
 public class TagController {
     private final TagService tagService;
 
     // Lấy ra tất cả tag
-    @GetMapping("/tags")
+    @GetMapping("/get-all-tags")
     public ResponseEntity<?> getAllTags() {
         return tagService.getAllTags();
     }
 
     // Lấy ra tag theo id
-    @GetMapping("/tags/{tag_id}")
+    @GetMapping("/{tag_id}")
     public ResponseEntity<?> getTag(@PathVariable("tag_id") Long tag_id) {
         return tagService.getTag(tag_id);
     }
@@ -28,13 +29,13 @@ public class TagController {
     }
 
     // Sửa tag
-    @PutMapping("/tags/{tag_id}")
+    @PutMapping("/{tag_id}")
     public ResponseEntity<?> updateTag(@PathVariable("tag_id") Long tag_id, @RequestBody Tag tag) {
         return tagService.updateTag(tag_id, tag);
     }
 
     // Xóa tag
-    @DeleteMapping("/tags/{tag_id}")
+    @DeleteMapping("/{tag_id}")
     public ResponseEntity<?> deleteTag(@PathVariable("tag_id") Long tag_id) {
         return tagService.deleteTag(tag_id);
     }
