@@ -98,4 +98,10 @@ public class ReviewService {
 
         return ResponseEntity.ok("da xoa review");
     }
+
+    public ResponseEntity<?> getReviewByUserIdAndSetId(Long setId, Long userId) {
+        Review review = reviewRepository.findBySetIdAndUserId(setId, userId);
+
+        return ResponseEntity.ok(review);
+    }
 }

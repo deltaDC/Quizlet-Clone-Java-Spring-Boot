@@ -48,4 +48,10 @@ public class ReviewController {
         return reviewService.deleteReviewById(reviewId);
     }
 
+    //lay review theo userId va setId
+    @GetMapping("/set/{setId}/user/{userId}")
+    public ResponseEntity<?> getReviewByUserIdAndSetId(@PathVariable("setId") Long setId, @PathVariable("userId") Long userId) {
+        return reviewService.getReviewByUserIdAndSetId(setId, userId);
+    }
+
 }
