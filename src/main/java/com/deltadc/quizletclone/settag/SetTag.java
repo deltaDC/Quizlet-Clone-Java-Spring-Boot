@@ -2,6 +2,7 @@ package com.deltadc.quizletclone.settag;
 
 import com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.tag.Tag;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,10 +23,15 @@ public class SetTag {
     private Long set_tag_id;
 
     @ManyToOne
-    @JoinColumn(name = "tag_id", nullable = false)
+    @JsonIgnore
+    @JoinColumn(name = "tag_id", nullable = false, insertable = false, updatable = false)
     private Tag tag;
 
     @OneToOne
-    @JoinColumn(name = "set_id", nullable = false, unique = true)
+    @JsonIgnore
+    @JoinColumn(name = "set_id", nullable = false, unique = true, insertable = false, updatable = false)
     private Set set;
+
+    private Long set_id;
+    private Long tag_id;
 }
