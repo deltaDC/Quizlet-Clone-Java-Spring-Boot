@@ -89,7 +89,7 @@ public class SetService {
     }
 
     public ResponseEntity<?> getSetByTitle(String title) {
-        List<Set> setList = setRepository.findByTitleContaining(title);
+        List<Set> setList = setRepository.findByTitleContainingAndIsPublic(title, true);
 
         return ResponseEntity.ok(setList);
     }
