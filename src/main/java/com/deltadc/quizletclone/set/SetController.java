@@ -68,4 +68,10 @@ public class SetController {
     public ResponseEntity<?> getPublicSets() {
         return setService.getPublicSet();
     }
+
+    //tim set theo title
+    @GetMapping("/title/{title}")
+    public ResponseEntity<?> getSetByTitle(@PathVariable("title") String title) {
+        return setService.getSetByTitle(title);
+    }
 }

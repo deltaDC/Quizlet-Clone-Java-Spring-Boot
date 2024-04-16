@@ -87,4 +87,10 @@ public class SetService {
 
         return ResponseEntity.ok(setList);
     }
+
+    public ResponseEntity<?> getSetByTitle(String title) {
+        List<Set> setList = setRepository.findByTitleContaining(title);
+
+        return ResponseEntity.ok(setList);
+    }
 }

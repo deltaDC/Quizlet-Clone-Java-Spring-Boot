@@ -12,4 +12,8 @@ public interface SetRepository extends JpaRepository<Set, Long> {
     List<Set> findByUserId(Long userId);
 
     List<Set> findByIsPublic(boolean b);
+
+    List<Set> findByTitleLike(String title);
+
+    List<Set> findByTitleContaining(String title);
 }
