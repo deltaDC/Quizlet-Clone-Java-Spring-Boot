@@ -31,10 +31,13 @@ public class User implements UserDetails {
     @Column(name = "user_id")
     private Long user_id;
 
+    @Column(name = "username", nullable = false)
     private String username;
 
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "password", nullable = false)
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -50,6 +53,7 @@ public class User implements UserDetails {
     private List<Folder> folders;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     public String getName() {

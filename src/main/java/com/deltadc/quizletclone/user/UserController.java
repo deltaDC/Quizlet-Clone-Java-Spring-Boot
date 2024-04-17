@@ -29,4 +29,22 @@ public class UserController {
     public ResponseEntity<?> changeUserPassWordById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
         return userService.changeUserPassWordById(userId, newUser);
     }
+
+    //lay user dua theo user id
+    @GetMapping("/{user_id}")
+    public ResponseEntity<?> getUserById(@PathVariable("user_id") Long userId) {
+        return userService.getUserById(userId);
+    }
+
+    //lay user dua theo username
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable("username") String username) {
+        return userService.getUserByUsername(username);
+    }
+
+    //lay user dua theo email
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> getUserByEmail(@PathVariable("email") String email) {
+        return userService.getUserByEmail(email);
+    }
 }
