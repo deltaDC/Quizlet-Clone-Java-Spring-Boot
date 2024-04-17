@@ -33,10 +33,10 @@ public class SecurityConfiguration {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 ) // session là stateless vì dùng token
-                .authorizeRequests(authorizeRequests ->
+                .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/**").permitAll()
-                                .requestMatchers("/api/**").permitAll() // Cho phép tất cả mọi người truy cập
+                                .requestMatchers("/api/auth/**").permitAll() // Cho phép tất cả mọi người truy cập
                                 .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
