@@ -2,7 +2,10 @@ package com.deltadc.quizletclone.card;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -46,5 +49,11 @@ public class CardController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCard(@PathVariable Long id) {
         return cardService.deleteCard(id);
+    }
+
+    // tao mot list cac card theo set id
+    @PostMapping("/{set_id}/create-cards")
+    public ResponseEntity<?> createCards(@PathVariable("set_id") Long setId, @RequestBody List<Card> cardList) {
+        return cardService.createCards(setId, cardList);
     }
 }

@@ -5,12 +5,14 @@ import com.deltadc.quizletclone.set.SetRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -97,5 +99,20 @@ public class CardService {
 //        set.removeCard(card); // Xóa Card ra khỏi Set
         cardRepository.deleteById(id);
         return ResponseEntity.ok("Deleted!");
+    }
+
+    public ResponseEntity<?> createCards(Long setId, List<Card> cardList) {
+
+        Optional<Set> set = setRepository.findById(setId);
+
+        if(set.isPresent()) {
+            cardList.forEach(card -> card.setSet_id(setId));
+
+            List<Card> savedCards = cardRepository.saveAll(cardList);
+            return ResponseEntity.ok(savedCards);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Set khong ton tai");
+        }
+
     }
 }
