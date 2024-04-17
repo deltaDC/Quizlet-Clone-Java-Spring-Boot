@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,15 +16,22 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final SetRepository setRepository;
-    private final FolderRepository folderRepository;
-
-
 
     public ResponseEntity<?> getAllUsers() {
         List<User> userList = userRepository.findAll();
+        List<UserDTO> userDTOS = userList.stream()
+                .map(user -> {
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.setUser_id(user.getUser_id());
+                    userDTO.setUsername(user.getUsername());
+                    userDTO.setEmail(user.getEmail());
+                    userDTO.setRole(user.getRole());
 
-        return ResponseEntity.ok(userList);
+                    return userDTO;
+                }).toList();
+
+
+        return ResponseEntity.ok(userDTOS);
     }
 
     public ResponseEntity<?> deleteUserById(Long userId) {
