@@ -13,4 +13,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
 
 
     List<Folder> findByIsPublic(boolean aTrue);
+
+    List<Folder> findByTitleContainingAndIsPublic(String title, boolean b);
 }

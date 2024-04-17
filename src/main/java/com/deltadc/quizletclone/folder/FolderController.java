@@ -71,4 +71,10 @@ public class FolderController {
     public ResponseEntity<?> editFolderById(@PathVariable("folderId") Long folderId, @RequestBody Folder newFolder) {
         return folderService.editFolderById(folderId, newFolder);
     }
+
+    //tim folder theo title
+    @GetMapping("/title/{title}")
+    public ResponseEntity<?> getFolderByTitle(@PathVariable("title") String title) {
+        return folderService.getFolderByTitle(title);
+    }
 }

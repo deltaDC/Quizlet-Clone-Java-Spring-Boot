@@ -115,4 +115,10 @@ public class FolderService {
 
         return ResponseEntity.ok(folder);
     }
+
+    public ResponseEntity<?> getFolderByTitle(String title) {
+        List<Folder> folders = folderRepository.findByTitleContainingAndIsPublic(title, true);
+
+        return ResponseEntity.ok(folders);
+    }
 }
