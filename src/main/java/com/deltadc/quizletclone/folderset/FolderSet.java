@@ -32,7 +32,10 @@ public class FolderSet {
     @JoinColumn(name = "set_id", insertable = false, updatable = false)
     private Set set;
 
+    @Column(name = "folder_id", nullable = false)
     private Long folder_id;
+
+    @Column(name = "set_id", nullable = false)
     private Long set_id;
 
 }

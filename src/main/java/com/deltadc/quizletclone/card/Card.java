@@ -28,16 +28,20 @@ public class Card {
     @JoinColumn(name = "set_id", insertable = false, updatable = false)
     private Set set;
 
+    @Column(name = "set_id", nullable = false)
     private Long set_id;
 
+    @Column(name = "front_text", nullable = false)
     private String front_text;
 
+    @Column(name = "back_text", nullable = false)
     private String back_text;
 
     private String created_at;
 
     private String updated_at;
 
+    @Column(name = "is_known", nullable = false)
     private boolean is_known;
 
     @PrePersist

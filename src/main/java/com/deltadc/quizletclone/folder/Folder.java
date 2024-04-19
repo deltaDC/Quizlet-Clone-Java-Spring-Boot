@@ -30,16 +30,20 @@ public class Folder {
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private User user;
 
+    @Column(name = "user_id", nullable = false)
     private Long user_id;
 
+    @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "description", nullable = false)
     private String description;
 
     private String createdAt;
 
     private String updatedAt;
 
+    @Column(name = "is_public", nullable = false)
     private boolean isPublic;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
