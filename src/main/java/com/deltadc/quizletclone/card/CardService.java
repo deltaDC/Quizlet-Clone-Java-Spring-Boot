@@ -68,6 +68,11 @@ public class CardService {
         if (set == null) {
             return ResponseEntity.badRequest().body("Cannot find this set!");
         }
+
+        if(card.getFront_text().length() <= 0 || card.getBack_text().length() <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
+        }
+
         Card newCard = new Card();
 
         newCard.set_known(false);

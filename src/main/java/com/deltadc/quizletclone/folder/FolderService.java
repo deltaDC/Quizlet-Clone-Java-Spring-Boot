@@ -28,6 +28,11 @@ public class FolderService {
     private final SetController setController;
 
     public ResponseEntity<?> createFolder(Folder folder) {
+        if(folder.getTitle().length() <= 0 || folder.getDescription().length() <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
+        }
+
+
         Folder createdFolder = new Folder();
         createdFolder.setTitle(folder.getTitle());
         createdFolder.setDescription(folder.getDescription());
