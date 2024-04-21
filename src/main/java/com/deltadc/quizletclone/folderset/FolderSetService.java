@@ -6,8 +6,6 @@ import com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.set.SetRepository;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +35,18 @@ public class FolderSetService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set không tồn tại");
         }
 
-        FolderSet fs = new FolderSet();
-        fs.setFolder_id(f.getFolder_id());
-        fs.setSet_id(s.getSet_id());
+        Optional<FolderSet> fs = folderSetRepository.findByFolderIdAndSetId(f.getFolder_id(), s.getSet_id());
+        if(fs.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set da ton tai trong folder");
+        } else {
+            FolderSet new_fs = new FolderSet();
+            new_fs.setFolder_id(f.getFolder_id());
+            new_fs.setSet_id(s.getSet_id());
 
-        folderSetRepository.save(fs);
+            folderSetRepository.save(new_fs);
 
-        return ResponseEntity.ok(fs);
+            return ResponseEntity.ok(new_fs);
+        }
     }
 
     public ResponseEntity<String> deleteFolderSetById(Long folderSetId) {

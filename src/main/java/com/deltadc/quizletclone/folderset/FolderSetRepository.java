@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FolderSetRepository extends JpaRepository<FolderSet, Long> {
@@ -13,4 +14,7 @@ public interface FolderSetRepository extends JpaRepository<FolderSet, Long> {
 
     @Query("SELECT fs FROM FolderSet fs WHERE fs.set_id = :setId")
     List<FolderSet> findBySetId(Long setId);
+
+    @Query("SELECT fs FROM FolderSet fs WHERE fs.folder_id = :folderId AND fs.set_id = :setId")
+    Optional<FolderSet> findByFolderIdAndSetId(Long folderId, Long setId);
 }
