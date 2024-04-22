@@ -53,5 +53,9 @@ public class FolderSetController {
         return folderSetService.editFolderSetById(folderSetId, newFolderSet);
     }
 
-
+    //xóa một set ra khỏi một folder
+    @DeleteMapping("/delete/{folderSetId}/set/{setId}")
+    public ResponseEntity<?> deleteSetFromFolder(@PathVariable("folderSetId") Long folderSetId, @PathVariable("setId") Long setId) {
+        return folderSetService.deleteSetFromFolder(folderSetId, setId);
+    }
 }

@@ -103,4 +103,12 @@ public class FolderSetService {
 
         return ResponseEntity.ok(folderSet);
     }
+
+    public ResponseEntity<?> deleteSetFromFolder(Long folderSetId, Long setId) {
+        FolderSet fs = folderSetRepository.findByFolderIdAndSetId(folderSetId, setId).orElseThrow();
+
+        folderSetRepository.delete(fs);
+
+        return ResponseEntity.ok("da xoa folderset voi id: " + folderSetId + " va set voi id " + setId);
+    }
 }
