@@ -35,28 +35,17 @@ public class ReviewService {
 
 
     public ResponseEntity<?> postSetReviews(@PathVariable Long setId, @RequestBody Review review) {
-        // Trích xuất thông tin người dùng từ JWT
-//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String username = userDetails.getUsername();
-//
-//        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-//        User user = userRepository.findByEmail(username).orElse(null);
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
-//        }
-//        Long userId = user.getUser_id();
-//
-//        // Tìm setId đó có tồn tại hay không
-//        Set s = setRepository.findById(setId).orElse(null);
-//        if (s == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SetId không tồn tại");
-//        }
         Long userId = review.getUser_id();
 
         // Kiểm tra xem user đã review set này trước đó chưa
         boolean hasReviewed = reviewRepository.existsBySetIdAndUserId(setId, userId);
         if (hasReviewed) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng đã review set này trước đó");
+        }
+
+        boolean isOwner = setRepository.findById(setId).get().getUser_id() == userId;
+        if(isOwner) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc tao review voi set cua ban than");
         }
 
         Review createdReview = new Review();
