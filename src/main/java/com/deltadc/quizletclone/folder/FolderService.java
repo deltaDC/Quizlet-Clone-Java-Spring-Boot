@@ -96,7 +96,10 @@ public class FolderService {
         for(FolderSet fs : fsList) {
             //System.out.println(fs.getFolder_set_id() + " " + fs.getFolder().getFolder_id() + " " + fs.getSet().getSet_id());
             Set s = fs.getSet();
+            Long userId = s.getUser_id();
+            String username = userRepository.findById(userId).get().getName();
             SetDTO sDTO = setController.convertToDTO(s);
+            sDTO.setOwnerName(username);
             setDTOList.add(sDTO);
         }
 

@@ -8,6 +8,16 @@ public class SetDTO {
     private String updatedAt;
     private boolean isPublic;
 
+    private String ownerName;
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
     public boolean isPublic() {
         return isPublic;
     }
