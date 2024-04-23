@@ -14,8 +14,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     private boolean isInvalidReview(Review review) {
-        return review.getSet_id() == null || review.getSet_id().toString().isEmpty()
-                || review.getTotalStars() > 5
+        return  review.getTotalStars() > 5
                 || review.getTotalStars() < 0;
     }
 
