@@ -19,10 +19,6 @@ public class SetService {
     private final UserRepository userRepository;
 
     public ResponseEntity<?> createSet(Set set) {
-        if(set.getTitle().length() <= 0 || set.getDescription().length() <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
-        }
-
         Set createdSet = new Set();
         createdSet.setTitle(set.getTitle());
         createdSet.setDescription(set.getDescription());

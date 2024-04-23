@@ -5,6 +5,7 @@ import com.deltadc.quizletclone.config.JwtService;
 import com.deltadc.quizletclone.user.UserRepository;
 import com.deltadc.quizletclone.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +30,20 @@ public class SetController {
         return setDTO;
     }
 
+    private boolean isEmptySetInput(Set set) {
+        return set.getUser_id().toString().isEmpty()
+                || set.getTitle().isEmpty()
+                || set.getDescription().isEmpty()
+                || String.valueOf(set.isPublic()).isEmpty();
+    }
+
     // tạo set mới
     @PostMapping("/create-set")
     public ResponseEntity<?> createSet(@RequestBody Set set) {
+        if(isEmptySetInput(set)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("khong duoc de trong");
+        }
+
         return setService.createSet(set);
     }
 
@@ -60,6 +72,10 @@ public class SetController {
     //edit mot set theo setId
     @PutMapping("/edit/{setId}")
     public ResponseEntity<?> editSetById(@PathVariable("setId") Long setId, @RequestBody Set newSet) {
+        if(isEmptySetInput(newSet)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("khong duoc de trong");
+        }
+
         return setService.editSetById(setId, newSet);
     }
 
