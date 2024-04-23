@@ -1,8 +1,8 @@
 package com.deltadc.quizletclone.card;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +14,10 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 public class CardController {
     private final CardService cardService;
+
+    private boolean isEmptyCardInput(Card card) {
+        return card.getFront_text().isEmpty() || card.getBack_text().isEmpty();
+    }
 
     // Lấy ra thông tin của tất cả card
     @GetMapping("/cards")
@@ -36,12 +40,20 @@ public class CardController {
     // Tạo card mới
     @PostMapping("/{set_id}/create_card")
     public ResponseEntity<?> createCard(@PathVariable("set_id") Long set_id, @RequestBody Card card) {
+        if(isEmptyCardInput(card)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
+        }
+
         return cardService.createCard(card, set_id);
     }
 
     // Chỉnh sửa card theo id
     @PutMapping("/edit/{id}")
     public ResponseEntity<?> updateCard(@PathVariable Long id, @RequestBody Card updatedCard) {
+        if(isEmptyCardInput(updatedCard)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
+        }
+
         return cardService.updateCard(id, updatedCard);
     }
 
@@ -54,6 +66,12 @@ public class CardController {
     // tao mot list cac card theo set id
     @PostMapping("/{set_id}/create-cards")
     public ResponseEntity<?> createCards(@PathVariable("set_id") Long setId, @RequestBody List<Card> cardList) {
+        boolean allCardsValid = cardList.stream().allMatch(this::isEmptyCardInput);
+
+        if(!allCardsValid) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
+        }
+
         return cardService.createCards(setId, cardList);
     }
 }
