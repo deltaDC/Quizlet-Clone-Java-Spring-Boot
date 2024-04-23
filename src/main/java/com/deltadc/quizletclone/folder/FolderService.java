@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,18 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final FolderSetRepository folderSetRepository;
     private final SetController setController;
+
+    private boolean isFolderOwner(Folder f) {
+        // Trích xuất thông tin người dùng từ JWT
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
+        User user = userRepository.findByEmail(username).orElseThrow();
+        Long userId = user.getUser_id();
+
+        return Objects.equals(userId, f.getUser_id());
+    }
 
     public ResponseEntity<?> createFolder(Folder folder) {
         if(folder.getTitle().length() <= 0 || folder.getDescription().length() <= 0) {
@@ -64,24 +77,14 @@ public class FolderService {
     }
 
     public ResponseEntity<String> deleteFolder(Long folderId) {
-        // Trích xuất thông tin người dùng từ JWT
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
-
-
-        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-        User user = userRepository.findByEmail(username).orElse(null);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
-        }
 
         Folder f = folderRepository.findById(folderId).orElse(null);
         if(f == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Folder không tồn tại");
         }
 
-        if (!f.getUser().getUser_id().equals(user.getUser_id())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không được phép xóa");
+        if (!isFolderOwner(f)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép xóa khi không sở hữu folder");
         }
 
         folderRepository.deleteById(folderId);
@@ -114,6 +117,10 @@ public class FolderService {
 
     public ResponseEntity<?> editFolderById(Long folderId, Folder newFolder) {
         Folder folder = folderRepository.findById(folderId).orElseThrow();
+
+        if(!isFolderOwner(folder)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép sửa khi không sở hữu folder");
+        }
 
         folder.setTitle(newFolder.getTitle());
         folder.setDescription(newFolder.getDescription());
