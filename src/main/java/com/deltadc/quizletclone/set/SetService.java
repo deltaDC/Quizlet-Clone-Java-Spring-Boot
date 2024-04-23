@@ -11,12 +11,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class SetService {
     private final SetRepository setRepository;
     private final UserRepository userRepository;
+
+    private boolean isSetOwner(Set s) {
+        // Trích xuất thông tin người dùng từ JWT
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
+        User user = userRepository.findByEmail(username).orElseThrow();
+        Long userId = user.getUser_id();
+        System.out.println("userId id " + userId);
+
+        System.out.println("user id of set is " + s.getUser_id());
+
+        return Objects.equals(s.getUser_id(), userId);
+    }
 
     public ResponseEntity<?> createSet(Set set) {
         Set createdSet = new Set();
@@ -34,30 +50,18 @@ public class SetService {
     //tra ve toan bo set cua nguoi dung theo userId
     public List<Set> getUserSets(Long userId) {
         // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
-        List<Set> userSets = setRepository.findByUserId(userId);
-
-        return userSets;
+        return setRepository.findByUserId(userId);
     }
 
-    public ResponseEntity<String> deleteSet(@PathVariable Long setId) {
-        // Trích xuất thông tin người dùng từ JWT
-//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String username = userDetails.getUsername();
-//
-//        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-//        User user = userRepository.findByEmail(username).orElse(null);
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
-//        }
-
+    public ResponseEntity<String> deleteSet(Long setId) {
         Set s = setRepository.findById(setId).orElse(null);
         if(s == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set không tồn tại");
         }
 
-//        if (!s.getUser_id().equals(user.getUser_id())) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không được phép xóa");
-//        }
+        if(!isSetOwner(s)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép xóa nếu không phải chủ sở hữu");
+        }
 
         setRepository.deleteById(setId);
         return ResponseEntity.ok("Xóa set thành công");
@@ -72,6 +76,10 @@ public class SetService {
 
     public ResponseEntity<?> editSetById(Long setId, Set newSet) {
         Set set = setRepository.findById(setId).orElseThrow();
+
+        if(!isSetOwner(set)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép sửa nếu không phải chủ sở hữu");
+        }
 
         set.setTitle(newSet.getTitle());
         set.setDescription(newSet.getDescription());

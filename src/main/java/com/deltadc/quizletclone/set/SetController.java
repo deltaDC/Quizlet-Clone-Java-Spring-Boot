@@ -31,8 +31,7 @@ public class SetController {
     }
 
     private boolean isEmptySetInput(Set set) {
-        return set.getUser_id().toString().isEmpty()
-                || set.getTitle().isEmpty()
+        return set.getTitle().isEmpty()
                 || set.getDescription().isEmpty()
                 || String.valueOf(set.isPublic()).isEmpty();
     }
