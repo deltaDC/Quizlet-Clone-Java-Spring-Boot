@@ -1,9 +1,8 @@
 package com.deltadc.quizletclone.set;
 
 
-import com.deltadc.quizletclone.config.JwtService;
+import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
-import com.deltadc.quizletclone.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,12 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:3000")
 public class SetController {
     private final SetService setService;
+    private final UserRepository userRepository;
 
     public SetDTO convertToDTO(Set set) {
+        User user = userRepository.findById(set.getUser_id()).orElseThrow();
+        String username = user.getName();
+
         SetDTO setDTO = new SetDTO();
         setDTO.setSetId(set.getSet_id());
         setDTO.setTitle(set.getTitle());
@@ -27,6 +30,7 @@ public class SetController {
         setDTO.setCreatedAt(set.getCreatedAt());
         setDTO.setUpdatedAt(set.getUpdatedAt());
         setDTO.setPublic(set.isPublic());
+        setDTO.setOwnerName(username);
         return setDTO;
     }
 
@@ -81,7 +85,12 @@ public class SetController {
     //lay tat ca cac public set
     @GetMapping("/get-public-sets")
     public ResponseEntity<?> getPublicSets() {
-        return setService.getPublicSet();
+        List<Set> setList = setService.getPublicSet();
+
+        List<SetDTO> userSetDTOs = setList.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userSetDTOs);
     }
 
     //tim set theo title
