@@ -2,6 +2,7 @@ package com.deltadc.quizletclone.folder;
 
 import com.deltadc.quizletclone.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,10 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:3000")
 public class FolderController {
     private final FolderService folderService;
+
+    private boolean isEmptyFolderInput(Folder folder) {
+        return folder.getTitle().isEmpty() || folder.getDescription().isEmpty() || String.valueOf(folder.isPublic()).isEmpty();
+    }
 
     private FolderDTO convertToDTO(Folder folder) {
         FolderDTO folderDTO = new FolderDTO();
@@ -29,6 +34,10 @@ public class FolderController {
     //tạo folder mới
     @PostMapping("/create-folder")
     public ResponseEntity<?> createFolder(@RequestBody Folder folder) {
+        if(isEmptyFolderInput(folder)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được để trống");
+        }
+
         return folderService.createFolder(folder);
     }
 
@@ -69,6 +78,10 @@ public class FolderController {
     //edit folder theo folderId
     @PutMapping("/edit/{folderId}")
     public ResponseEntity<?> editFolderById(@PathVariable("folderId") Long folderId, @RequestBody Folder newFolder) {
+        if(isEmptyFolderInput(newFolder)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được để trống");
+        }
+
         return folderService.editFolderById(folderId, newFolder);
     }
 
