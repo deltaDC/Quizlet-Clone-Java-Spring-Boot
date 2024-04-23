@@ -40,7 +40,7 @@ public class CardService {
 
         Long setId = c.getSet_id();
         Set s = setRepository.findById(setId).orElseThrow();
-        System.out.println("set id is " + s.getUser_id());
+        System.out.println("user id of set is " + s.getUser_id());
 
         return Objects.equals(s.getUser_id(), userId);
     }
