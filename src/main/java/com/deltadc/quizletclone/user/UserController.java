@@ -12,6 +12,16 @@ public class UserController {
 
     private final UserService userService;
 
+    private UserDTO convertToDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setUser_id(user.getUser_id());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+
+        return dto;
+    }
+
     //lay ra toan bo user
     @GetMapping("/get-all-users")
     public ResponseEntity<?> getAllUsers() {
@@ -46,5 +56,13 @@ public class UserController {
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable("email") String email) {
         return userService.getUserByEmail(email);
+    }
+
+    @PutMapping("/change-username/{userId}")
+    public ResponseEntity<?> changeUsernameById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+        User u = userService.changeUsernameById(userId, newUser);
+        UserDTO userDTO = convertToDTO(u);
+
+        return ResponseEntity.ok(userDTO);
     }
 }

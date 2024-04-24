@@ -1,15 +1,10 @@
 package com.deltadc.quizletclone.user;
 
-import com.deltadc.quizletclone.folder.Folder;
-import com.deltadc.quizletclone.folder.FolderRepository;
-import com.deltadc.quizletclone.set.Set;
-import com.deltadc.quizletclone.set.SetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,5 +94,15 @@ public class UserService {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User khong ton tai");
         }
+    }
+
+    public User changeUsernameById(Long userId, User newUser) {
+        User u = userRepository.findById(userId).orElseThrow();
+
+        u.setUsername(newUser.getName());
+
+        userRepository.save(u);
+
+        return u;
     }
 }
