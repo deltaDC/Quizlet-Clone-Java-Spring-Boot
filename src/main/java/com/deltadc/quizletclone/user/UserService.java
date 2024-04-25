@@ -3,6 +3,7 @@ package com.deltadc.quizletclone.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> getAllUsers() {
         List<User> userList = userRepository.findAll();
@@ -41,7 +43,7 @@ public class UserService {
 
     public ResponseEntity<?> changeUserPassWordById(Long userId, User newUser) {
         User user = userRepository.findById(userId).orElseThrow();
-        user.setPassword(newUser.getPassword());
+        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
         userRepository.save(user);
 
