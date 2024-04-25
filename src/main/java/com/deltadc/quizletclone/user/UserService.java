@@ -3,10 +3,13 @@ package com.deltadc.quizletclone.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -15,6 +18,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private boolean isUserOwner(User user) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        User u = userRepository.findByUsername(username).orElseThrow();
+
+        return Objects.equals(u.getUser_id(), user.getUser_id());
+    }
 
     public ResponseEntity<?> getAllUsers() {
         List<User> userList = userRepository.findAll();
@@ -36,6 +48,10 @@ public class UserService {
     public ResponseEntity<?> deleteUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
 
+        if(!isUserOwner(user)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc xoa tai khoan voi tai khoan khong phai cua minh");
+        }
+
         userRepository.delete(user);
 
         return ResponseEntity.ok("da xoa user " + userId);
@@ -43,6 +59,11 @@ public class UserService {
 
     public User changeUserPassWordById(Long userId, User newUser) {
         User user = userRepository.findById(userId).orElseThrow();
+
+        if(!isUserOwner(user)) {
+            return null;
+        }
+
         user.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
         userRepository.save(user);
@@ -100,6 +121,10 @@ public class UserService {
 
     public User changeUsernameById(Long userId, User newUser) {
         User u = userRepository.findById(userId).orElseThrow();
+
+        if(!isUserOwner(u)) {
+            return null;
+        }
 
         u.setUsername(newUser.getName());
 

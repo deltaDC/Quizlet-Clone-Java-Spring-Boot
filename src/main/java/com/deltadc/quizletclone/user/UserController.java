@@ -1,7 +1,10 @@
 package com.deltadc.quizletclone.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +42,16 @@ public class UserController {
     //edit mat khau cua 1 user theo userId
     @PutMapping("/change-password/{userId}")
     public ResponseEntity<?> changeUserPassWordById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+
+        if(newUser.getPassword().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc de trong");
+        }
+
         User u = userService.changeUserPassWordById(userId, newUser);
+        if(u == null) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc doi mat khau voi tai khoan khong phai cua minh");
+        }
+
         UserDTO userDTO = convertToDTO(u);
 
         return ResponseEntity.ok(userDTO);
@@ -65,7 +77,17 @@ public class UserController {
 
     @PutMapping("/change-username/{userId}")
     public ResponseEntity<?> changeUsernameById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+
+        if(newUser.getName().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc de trong");
+        }
+
         User u = userService.changeUsernameById(userId, newUser);
+
+        if(u == null) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc doi ten voi tai khoan khong phai cua minh");
+        }
+
         UserDTO userDTO = convertToDTO(u);
 
         return ResponseEntity.ok(userDTO);
