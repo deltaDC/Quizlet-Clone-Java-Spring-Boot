@@ -18,6 +18,14 @@ import java.util.Date;
 @Builder
 @Table(name = "card")
 public class Card {
+
+    public Card(Long set_id, String front_text, String back_text, boolean is_known) {
+        this.set_id = set_id;
+        this.front_text = front_text;
+        this.back_text = back_text;
+        this.is_known = is_known;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "card_id")

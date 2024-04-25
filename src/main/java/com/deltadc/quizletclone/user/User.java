@@ -25,6 +25,13 @@ import java.util.List;
 @Table(name = "user") // table voi ten la "user"
 public class User implements UserDetails {
 
+    public User(String username, String email, String password, Role role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     // danh dau la id va auto_increment
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

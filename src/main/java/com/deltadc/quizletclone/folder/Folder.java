@@ -20,6 +20,13 @@ import java.util.List;
 @Table(name = "folder")
 public class Folder {
 
+    public Folder(Long user_id, String title, String description, boolean isPublic) {
+        this.user_id = user_id;
+        this.title = title;
+        this.description = description;
+        this.isPublic = isPublic;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "folder_id")

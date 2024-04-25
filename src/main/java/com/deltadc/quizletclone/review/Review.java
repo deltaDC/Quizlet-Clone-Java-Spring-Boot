@@ -17,6 +17,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "review")
 public class Review {
 
+    public Review(Long user_id, Long set_id, int totalStars) {
+        this.totalStars = totalStars;
+        this.set_id = set_id;
+        this.user_id = user_id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")

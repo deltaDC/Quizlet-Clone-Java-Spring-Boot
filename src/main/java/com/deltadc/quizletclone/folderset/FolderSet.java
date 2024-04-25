@@ -17,6 +17,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "folder_set")
 public class FolderSet {
 
+    public FolderSet(Long folder_id, Long set_id) {
+        this.folder_id = folder_id;
+        this.set_id = set_id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "folder_set_id")
