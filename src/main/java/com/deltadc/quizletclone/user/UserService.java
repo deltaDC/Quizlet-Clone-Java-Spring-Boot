@@ -21,9 +21,10 @@ public class UserService {
 
     private boolean isUserOwner(User user) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
+        String userMail = userDetails.getUsername();
+        System.out.println(userMail);
 
-        User u = userRepository.findByUsername(username).orElseThrow();
+        User u = userRepository.findByEmail(userMail).orElseThrow();
 
         return Objects.equals(u.getUser_id(), user.getUser_id());
     }
