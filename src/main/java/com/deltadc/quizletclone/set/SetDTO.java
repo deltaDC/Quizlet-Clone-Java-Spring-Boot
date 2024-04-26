@@ -1,5 +1,10 @@
 package com.deltadc.quizletclone.set;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class SetDTO {
     private Long setId;
     private String title;
@@ -10,13 +15,7 @@ public class SetDTO {
 
     private String ownerName;
 
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
+    private Long totalTerms;
 
     public boolean isPublic() {
         return isPublic;
@@ -26,43 +25,4 @@ public class SetDTO {
         this.isPublic = aPublic;
     }
 
-    public Long getSetId() {
-        return setId;
-    }
-
-    public void setSetId(Long setId) {
-        this.setId = setId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
@@ -126,11 +127,25 @@ public class DataInitializer implements CommandLineRunner {
 
         if(setRepository.count() == 0) {
             for (User user : users) {
-                Set set1 = new Set(user.getUser_id(), "Set 1 for " + user.getName(), "Description for Set 1 of " + user.getName(), true);
-                Set set2 = new Set(user.getUser_id(), "Set 2 for " + user.getName(), "Description for Set 2 of " + user.getName(), false);
-                Set set3 = new Set(user.getUser_id(), "Set 3 for " + user.getName(), "Description for Set 3 of " + user.getName(), true);
+                int random = (int) (Math.random() * 30) + 1;
+                for(int i = 1; i <= random; i++) {
+                    Set set1 = new Set(user.getUser_id(), "Set " + i + " for " + user.getName(), "Description for Set "+ i + " of " + user.getName(), true);
+                    setRepository.save(set1);
+                }
 
-                setRepository.saveAll(Arrays.asList(set1, set2, set3));
+//                Set set1 = new Set(user.getUser_id(), "Set 1 for " + user.getName(), "Description for Set 1 of " + user.getName(), true);
+//                Set set2 = new Set(user.getUser_id(), "Set 2 for " + user.getName(), "Description for Set 2 of " + user.getName(), false);
+//                Set set3 = new Set(user.getUser_id(), "Set 3 for " + user.getName(), "Description for Set 3 of " + user.getName(), true);
+//                Set set4 = new Set(user.getUser_id(), "Set 4 for " + user.getName(), "Description for Set 4 of " + user.getName(), true);
+//                Set set5 = new Set(user.getUser_id(), "Set 5 for " + user.getName(), "Description for Set 5 of " + user.getName(), false);
+//                Set set6 = new Set(user.getUser_id(), "Set 6 for " + user.getName(), "Description for Set 6 of " + user.getName(), false);
+//                Set set7 = new Set(user.getUser_id(), "Set 7 for " + user.getName(), "Description for Set 7 of " + user.getName(), true);
+//                Set set8 = new Set(user.getUser_id(), "Set 8 for " + user.getName(), "Description for Set 8 of " + user.getName(), true);
+//                Set set9 = new Set(user.getUser_id(), "Set 9 for " + user.getName(), "Description for Set 9 of " + user.getName(), false);
+//                Set set10 = new Set(user.getUser_id(), "Set 10 for " + user.getName(), "Description for Set 10 of " + user.getName(), true);
+
+
+//                setRepository.saveAll(Arrays.asList(set1, set2, set3, set4, set5, set6, set7, set8, set9, set10));
             }
         }
 
@@ -140,7 +155,8 @@ public class DataInitializer implements CommandLineRunner {
 
         if(cardRepository.count() == 0) {
             for (Set set : sets) {
-                for (int i = 1; i <= 10; i++) {
+                int random = (int) (Math.random() * 100) + 1;
+                for (int i = 1; i <= random; i++) {
                     String frontText = "Front text for Card " + i + " of Set " + set.getSet_id();
                     String backText = "Back text for Card " + i + " of Set " + set.getSet_id();
 
@@ -155,6 +171,12 @@ public class DataInitializer implements CommandLineRunner {
             //tao review ao
             for (User user : users) {
                 for (Set set : sets) {
+                    Random random = new Random();
+                    int randomNumber = random.nextInt(2);
+                    if(randomNumber == 0) {
+                        continue;
+                    }
+
                     int totalStars = (int) (Math.random() * 5) + 1;
 
                     Review review = new Review(user.getUser_id(), set.getSet_id(), totalStars);
@@ -166,8 +188,11 @@ public class DataInitializer implements CommandLineRunner {
         if(folderRepository.count() == 0) {
             //tao folder ao
             for (User user : users) {
-                Folder folder = new Folder(user.getUser_id(), "Folder for " + user.getName(), "Description for folder of " + user.getName(), true);
-                folderRepository.save(folder);
+                int random = (int) (Math.random() * 20) + 1;
+                for(int i = 1; i <= random; i++) {
+                    Folder folder = new Folder(user.getUser_id(), "#" + i + ". Folder for " + user.getName(), "Description for folder "+ i + " of " + user.getName(), true);
+                    folderRepository.save(folder);
+                }
             }
         }
 

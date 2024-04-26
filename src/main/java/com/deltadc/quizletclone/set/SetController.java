@@ -1,6 +1,8 @@
 package com.deltadc.quizletclone.set;
 
 
+import com.deltadc.quizletclone.card.Card;
+import com.deltadc.quizletclone.card.CardRepository;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +20,13 @@ import java.util.stream.Collectors;
 public class SetController {
     private final SetService setService;
     private final UserRepository userRepository;
+    private final CardRepository cardRepository;
 
     public SetDTO convertToDTO(Set set) {
         User user = userRepository.findById(set.getUser_id()).orElseThrow();
         String username = user.getName();
+
+        List<Card> cards = cardRepository.findListCardsBySetId(set.getSet_id());
 
         SetDTO setDTO = new SetDTO();
         setDTO.setSetId(set.getSet_id());
@@ -30,6 +35,7 @@ public class SetController {
         setDTO.setCreatedAt(set.getCreatedAt());
         setDTO.setUpdatedAt(set.getUpdatedAt());
         setDTO.setPublic(set.isPublic());
+        setDTO.setTotalTerms((long) cards.size());
         setDTO.setOwnerName(username);
         return setDTO;
     }
