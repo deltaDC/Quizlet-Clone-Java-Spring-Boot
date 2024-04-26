@@ -3,6 +3,9 @@ package com.deltadc.quizletclone.set;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,9 +50,11 @@ public class SetService {
     }
 
     //tra ve toan bo set cua nguoi dung theo userId
-    public List<Set> getUserSets(Long userId) {
+    public Page<Set> getUserSets(Long userId, int page, int size) {
         // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
-        return setRepository.findByUserId(userId);
+        Pageable pageable = PageRequest.of(page, size);
+
+        return setRepository.findByUserId(userId, pageable);
     }
 
     public ResponseEntity<String> deleteSet(Long setId) {
@@ -66,10 +71,14 @@ public class SetService {
         return ResponseEntity.ok("Xóa set thành công");
     }
 
-    public ResponseEntity<?> getAllSets() {
-        List<Set> setList = setRepository.findAll();
+    public ResponseEntity<?> getAllSets(int page, int size) {
+//        List<Set> setList = setRepository.findAll();
 
-        return ResponseEntity.ok(setList);
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Set> setPage = setRepository.findAll(pageable);
+
+        return ResponseEntity.ok(setPage);
 
     }
 
@@ -89,13 +98,18 @@ public class SetService {
         return ResponseEntity.ok(set);
     }
 
-    public List<Set> getPublicSet() {
-        return setRepository.findByIsPublic(true);
+    public Page<Set> getPublicSet(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return setRepository.findByIsPublic(true, pageable);
     }
 
-    public ResponseEntity<?> getSetByTitle(String title) {
-        List<Set> setList = setRepository.findByTitleContainingAndIsPublic(title, true);
+    public Page<Set> getSetByTitle(String title, int page, int size) {
 
-        return ResponseEntity.ok(setList);
+        Pageable pageable = PageRequest.of(page, size);
+
+        return setRepository.findByTitleContainingAndIsPublic(title, true, pageable);
+
     }
 }

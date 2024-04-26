@@ -127,7 +127,7 @@ public class DataInitializer implements CommandLineRunner {
 
         if(setRepository.count() == 0) {
             for (User user : users) {
-                int random = (int) (Math.random() * 30) + 1;
+                int random = (int) (Math.random() * 100) + 1;
                 for(int i = 1; i <= random; i++) {
                     Set set1 = new Set(user.getUser_id(), "Set " + i + " for " + user.getName(), "Description for Set "+ i + " of " + user.getName(), true);
                     setRepository.save(set1);
