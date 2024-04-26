@@ -15,7 +15,7 @@ public class SetDTO {
 
     private String ownerName;
 
-    private Long totalTerms;
+    private Long termCount;
 
     public boolean isPublic() {
         return isPublic;

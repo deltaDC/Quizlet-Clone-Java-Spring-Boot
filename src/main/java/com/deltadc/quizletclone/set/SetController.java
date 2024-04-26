@@ -35,7 +35,7 @@ public class SetController {
         setDTO.setCreatedAt(set.getCreatedAt());
         setDTO.setUpdatedAt(set.getUpdatedAt());
         setDTO.setPublic(set.isPublic());
-        setDTO.setTotalTerms((long) cards.size());
+        setDTO.setTermCount((long) cards.size());
         setDTO.setOwnerName(username);
         return setDTO;
     }
