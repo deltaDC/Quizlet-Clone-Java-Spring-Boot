@@ -59,7 +59,7 @@ public class SetController {
 
     // lấy tất cả set của người dùng theo userId
     @GetMapping("/{user_id}/sets")
-    public ResponseEntity<?> getUserSets(@PathVariable("user_id") Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
+    public ResponseEntity<?> getUserSets(@PathVariable("user_id") Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> userSets = setService.getUserSets(userId, page, size);
         List<SetDTO> userSetDTOs = userSets.stream()
                 .map(this::convertToDTO)
@@ -75,7 +75,7 @@ public class SetController {
 
     //lay toan bo cac set
     @GetMapping("/get-all-sets")
-    public ResponseEntity<?> getAllSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
+    public ResponseEntity<?> getAllSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         return setService.getAllSets(page, size);
     }
 
@@ -91,7 +91,7 @@ public class SetController {
 
     //lay tat ca cac public set
     @GetMapping("/get-public-sets")
-    public ResponseEntity<?> getPublicSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
+    public ResponseEntity<?> getPublicSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getPublicSet(page, size);
 
         List<SetDTO> userSetDTOs = setPage.stream()
@@ -102,7 +102,7 @@ public class SetController {
 
     //tim set theo title
     @GetMapping("/title/{title}")
-    public ResponseEntity<?> getSetByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
+    public ResponseEntity<?> getSetByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getSetByTitle(title, page, size);
 
         List<SetDTO> setDTOS = setPage.stream()

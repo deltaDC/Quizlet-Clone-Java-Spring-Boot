@@ -33,7 +33,7 @@ public class CardController {
 
     // Lấy tất cả cards trong 1 set
     @GetMapping("/{set_id}/cards")
-    public ResponseEntity<?> getCardsInSet(@PathVariable("set_id") Long set_id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getCardsInSet(@PathVariable("set_id") Long set_id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         return cardService.getCardsInSet(set_id, page, size);
     }
 
