@@ -132,20 +132,6 @@ public class DataInitializer implements CommandLineRunner {
                     Set set1 = new Set(user.getUser_id(), "Set " + i + " for " + user.getName(), "Description for Set "+ i + " of " + user.getName(), true);
                     setRepository.save(set1);
                 }
-
-//                Set set1 = new Set(user.getUser_id(), "Set 1 for " + user.getName(), "Description for Set 1 of " + user.getName(), true);
-//                Set set2 = new Set(user.getUser_id(), "Set 2 for " + user.getName(), "Description for Set 2 of " + user.getName(), false);
-//                Set set3 = new Set(user.getUser_id(), "Set 3 for " + user.getName(), "Description for Set 3 of " + user.getName(), true);
-//                Set set4 = new Set(user.getUser_id(), "Set 4 for " + user.getName(), "Description for Set 4 of " + user.getName(), true);
-//                Set set5 = new Set(user.getUser_id(), "Set 5 for " + user.getName(), "Description for Set 5 of " + user.getName(), false);
-//                Set set6 = new Set(user.getUser_id(), "Set 6 for " + user.getName(), "Description for Set 6 of " + user.getName(), false);
-//                Set set7 = new Set(user.getUser_id(), "Set 7 for " + user.getName(), "Description for Set 7 of " + user.getName(), true);
-//                Set set8 = new Set(user.getUser_id(), "Set 8 for " + user.getName(), "Description for Set 8 of " + user.getName(), true);
-//                Set set9 = new Set(user.getUser_id(), "Set 9 for " + user.getName(), "Description for Set 9 of " + user.getName(), false);
-//                Set set10 = new Set(user.getUser_id(), "Set 10 for " + user.getName(), "Description for Set 10 of " + user.getName(), true);
-
-
-//                setRepository.saveAll(Arrays.asList(set1, set2, set3, set4, set5, set6, set7, set8, set9, set10));
             }
         }
 
