@@ -31,6 +31,7 @@ public class SetController {
 
         SetDTO setDTO = new SetDTO();
         setDTO.setSetId(set.getSet_id());
+        setDTO.setUserId(user.getUser_id());
         setDTO.setTitle(set.getTitle());
         setDTO.setDescription(set.getDescription());
         setDTO.setCreatedAt(set.getCreatedAt());

@@ -7,11 +7,21 @@ import lombok.Setter;
 @Setter
 public class SetDTO {
     private Long setId;
+
+    private Long userId;
     private String title;
     private String description;
     private String createdAt;
     private String updatedAt;
     private boolean isPublic;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     private String ownerName;
 
