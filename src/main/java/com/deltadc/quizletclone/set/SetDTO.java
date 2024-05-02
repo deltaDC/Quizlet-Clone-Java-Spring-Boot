@@ -15,14 +15,6 @@ public class SetDTO {
     private String updatedAt;
     private boolean isPublic;
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     private String ownerName;
 
     private Long termCount;

@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,10 +61,8 @@ public class SetController {
     @GetMapping("/{user_id}/sets")
     public ResponseEntity<?> getUserSets(@PathVariable("user_id") Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> userSets = setService.getUserSets(userId, page, size);
-        List<SetDTO> userSetDTOs = userSets.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userSetDTOs);
+
+        return ResponseEntity.ok(userSets);
     }
 
     // xóa set dựa trên setId
@@ -95,10 +92,7 @@ public class SetController {
     public ResponseEntity<?> getPublicSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getPublicSet(page, size);
 
-        List<SetDTO> userSetDTOs = setPage.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userSetDTOs);
+        return ResponseEntity.ok(setPage);
     }
 
     //tim set theo title
@@ -106,9 +100,6 @@ public class SetController {
     public ResponseEntity<?> getSetByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getSetByTitle(title, page, size);
 
-        List<SetDTO> setDTOS = setPage.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(setDTOS);
+        return ResponseEntity.ok(setPage);
     }
 }
