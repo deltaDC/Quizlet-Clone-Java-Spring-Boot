@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,7 +63,11 @@ public class SetController {
     public ResponseEntity<?> getUserSets(@PathVariable("user_id") Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> userSets = setService.getUserSets(userId, page, size);
 
-        return ResponseEntity.ok(userSets);
+        List<SetDTO> setDTOPage = userSets.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(setDTOPage);
     }
 
     // xóa set dựa trên setId
@@ -92,7 +97,11 @@ public class SetController {
     public ResponseEntity<?> getPublicSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getPublicSet(page, size);
 
-        return ResponseEntity.ok(setPage);
+        List<SetDTO> setDTOPage = setPage.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(setDTOPage);
     }
 
     //tim set theo title
@@ -100,6 +109,10 @@ public class SetController {
     public ResponseEntity<?> getSetByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getSetByTitle(title, page, size);
 
-        return ResponseEntity.ok(setPage);
+        List<SetDTO> setDTOPage = setPage.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(setDTOPage);
     }
 }
