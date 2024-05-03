@@ -79,9 +79,9 @@ public class AuthenticationService {
                         new IllegalStateException("token not found"));
 
         Long user_id = confirmationToken.getUser().getUser_id();
-//        if (confirmationToken.getConfirmedAt() != null) {
-//            throw new IllegalStateException("email already confirmed");
-//        }
+        if (confirmationToken.getConfirmedAt() != null) {
+            throw new IllegalStateException("email already confirmed");
+        }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
