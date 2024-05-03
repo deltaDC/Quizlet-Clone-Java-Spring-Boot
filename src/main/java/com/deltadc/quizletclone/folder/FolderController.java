@@ -76,8 +76,8 @@ public class FolderController {
 
     //lấy tất cả các set trong một folder dựa trên folderId
     @GetMapping("/{folderId}/sets")
-    public ResponseEntity<?> getSetsInFolder(@PathVariable("folderId") Long folderId) {
-        return folderService.getSetsInFolder(folderId);
+    public ResponseEntity<?> getSetsInFolder(@PathVariable("folderId") Long folderId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+        return folderService.getSetsInFolder(folderId, page, size);
     }
 
     //edit folder theo folderId

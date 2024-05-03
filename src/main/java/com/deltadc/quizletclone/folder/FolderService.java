@@ -97,8 +97,10 @@ public class FolderService {
     }
 
 
-    public ResponseEntity<?> getSetsInFolder(Long folderId) {
-        List<FolderSet> fsList = folderSetRepository.findByFolderId(folderId);
+    public ResponseEntity<?> getSetsInFolder(Long folderId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<FolderSet> fsList = folderSetRepository.findByFolderIdWithPageable(folderId, pageable);
 
         List<SetDTO> setDTOList = new ArrayList<>();
         for(FolderSet fs : fsList) {
