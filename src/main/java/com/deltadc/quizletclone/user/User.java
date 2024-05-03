@@ -1,6 +1,7 @@
 package com.deltadc.quizletclone.user;
 
 
+import com.deltadc.quizletclone.auth.authtoken.ConfirmationToken;
 import com.deltadc.quizletclone.folder.Folder;
 import com.deltadc.quizletclone.review.Review;
 import com.deltadc.quizletclone.set.Set;
@@ -62,6 +63,9 @@ public class User implements UserDetails {
     private Role role;
 
     private Boolean enabled;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ConfirmationToken> confirmationTokens;
 
     public String getName() {
         return username;
