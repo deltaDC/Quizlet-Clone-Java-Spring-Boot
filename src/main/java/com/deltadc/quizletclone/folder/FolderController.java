@@ -2,6 +2,7 @@ package com.deltadc.quizletclone.folder;
 
 import com.deltadc.quizletclone.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,19 +44,23 @@ public class FolderController {
 
     //lay toan bo cac folder hien co
     @GetMapping("/get-all-folders")
-    public ResponseEntity<?> getAllFolders() {
-        return folderService.getAllFolders();
+    public ResponseEntity<?> getAllFolders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+        Page<Folder> folderPage = folderService.getAllFolders(page, size);
+
+        return ResponseEntity.ok(folderPage);
     }
 
     //lay toan bo public folder
     @GetMapping("/get-public-folders")
-    public ResponseEntity<?> getPublicFolders() {
-        return folderService.getPublicFolders();
+    public ResponseEntity<?> getPublicFolders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+        Page<Folder> folderPage = folderService.getPublicFolders(page, size);
+
+        return ResponseEntity.ok(folderPage);
     }
 
     //lấy toàn bộ folder của người dùng dựa trên user_id
     @GetMapping("/{userId}/folders")
-    public ResponseEntity<List<FolderDTO>> getUserFolders(@PathVariable("userId") Long userId) {
+    public ResponseEntity<?> getUserFolders(@PathVariable("userId") Long userId) {
         List<Folder> userFolders = folderService.getUserFolders(userId);
         List<FolderDTO> userFolderDTOs = userFolders.stream()
                 .map(this::convertToDTO)
@@ -87,7 +92,9 @@ public class FolderController {
 
     //tim folder theo title
     @GetMapping("/title/{title}")
-    public ResponseEntity<?> getFolderByTitle(@PathVariable("title") String title) {
-        return folderService.getFolderByTitle(title);
+    public ResponseEntity<?> getFolderByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+        Page<Folder> folderPage = folderService.getFolderByTitle(title, page, size);
+
+        return ResponseEntity.ok(folderPage);
     }
 }

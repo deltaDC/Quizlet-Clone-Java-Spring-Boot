@@ -1,5 +1,7 @@
 package com.deltadc.quizletclone.folder;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,7 +14,7 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     List<Folder> findByUserId(Long userId);
 
 
-    List<Folder> findByIsPublic(boolean aTrue);
+    Page<Folder> findByIsPublic(boolean aTrue, Pageable pageable);
 
-    List<Folder> findByTitleContainingAndIsPublic(String title, boolean b);
+    Page<Folder> findByTitleContainingAndIsPublic(String title, boolean b, Pageable pageable);
 }

@@ -10,6 +10,9 @@ import com.deltadc.quizletclone.user.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,16 +67,18 @@ public class FolderService {
         return ResponseEntity.ok(savedFolder);
     }
 
-    public ResponseEntity<?> getAllFolders() {
-        List<Folder> folders = folderRepository.findAll();
+    public Page<Folder> getAllFolders(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
 
-        return ResponseEntity.ok(folders);
+        return folderRepository.findAll(pageable);
     }
 
-    public ResponseEntity<?> getPublicFolders() {
-        List<Folder> publicFolders = folderRepository.findByIsPublic(true);
+    public Page<Folder> getPublicFolders(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
 
-        return ResponseEntity.ok(publicFolders);
+        Page<Folder> publicFolders = folderRepository.findByIsPublic(true, pageable);
+
+        return publicFolders;
     }
 
     public ResponseEntity<String> deleteFolder(Long folderId) {
@@ -131,9 +136,9 @@ public class FolderService {
         return ResponseEntity.ok(folder);
     }
 
-    public ResponseEntity<?> getFolderByTitle(String title) {
-        List<Folder> folders = folderRepository.findByTitleContainingAndIsPublic(title, true);
+    public Page<Folder> getFolderByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
 
-        return ResponseEntity.ok(folders);
+        return folderRepository.findByTitleContainingAndIsPublic(title, true, pageable);
     }
 }
