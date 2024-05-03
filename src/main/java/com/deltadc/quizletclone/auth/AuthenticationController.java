@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.regex.Pattern;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -12,6 +14,18 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+
+    private boolean isValidEmail(String email) {
+        // Regular expression for email validation
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
+        // Compile the regex pattern
+        Pattern pattern = Pattern.compile(emailRegex);
+
+        // If the email matches the regex pattern, return true; otherwise, return false
+        return pattern.matcher(email).matches();
+    }
+
 
     @PostMapping("/signup")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody SignUpRequest request) {
@@ -24,7 +38,16 @@ public class AuthenticationController {
                     );
         }
 
-        System.out.println(request.getUsername() + " " + request.getPassword() + " " + request.getPassword());
+        if(!isValidEmail(request.getEmail())) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(
+                            AuthenticationResponse.builder()
+                                    .message("email khong hop le")
+                                    .build()
+                    );
+        }
+
+
         return authenticationService.signup(request);
     }
 
@@ -35,6 +58,15 @@ public class AuthenticationController {
                     .body(
                             AuthenticationResponse.builder()
                                     .message("khong duoc de trong")
+                                    .build()
+                    );
+        }
+
+        if(!isValidEmail(request.getEmail())) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(
+                            AuthenticationResponse.builder()
+                                    .message("email khong hop le")
                                     .build()
                     );
         }
