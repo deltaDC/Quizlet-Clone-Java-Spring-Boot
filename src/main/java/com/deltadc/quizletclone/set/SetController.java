@@ -69,7 +69,11 @@ public class SetController {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(setDTOPage);
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", setDTOPage);
+        response.put("totalPages", userSets.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
     // xóa set dựa trên setId
