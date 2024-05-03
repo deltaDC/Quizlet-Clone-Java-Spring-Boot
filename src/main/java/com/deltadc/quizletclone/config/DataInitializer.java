@@ -44,7 +44,8 @@ public class DataInitializer implements CommandLineRunner {
                     "admin",
                     "admin@gmail.com",
                     passwordEncoder.encode("admin"),
-                    Role.ADMIN
+                    Role.ADMIN,
+                    true
             );
 
 
@@ -52,70 +53,80 @@ public class DataInitializer implements CommandLineRunner {
                     "Alice",
                     "alice@gmail.com",
                     passwordEncoder.encode("alice"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user2 = new User(
                     "Bob",
                     "bob@gmail.com",
                     passwordEncoder.encode("bob"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user3 = new User(
                     "Charlie",
                     "charlie@gmail.com",
                     passwordEncoder.encode("charlie"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user4 = new User(
                     "David",
                     "david@gmail.com",
                     passwordEncoder.encode("david"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user5 = new User(
                     "Eve",
                     "eve@gmail.com",
                     passwordEncoder.encode("eve"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user6 = new User(
                     "Frank",
                     "frank@gmail.com",
                     passwordEncoder.encode("frank"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user7 = new User(
                     "Grace",
                     "grace@gmail.com",
                     passwordEncoder.encode("grace"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user8 = new User(
                     "Henry",
                     "henry@gmail.com",
                     passwordEncoder.encode("henry"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user9 = new User(
                     "Ivy",
                     "ivy@gmail.com",
                     passwordEncoder.encode("ivy"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             User user10 = new User(
                     "Jack",
                     "jack@gmail.com",
                     passwordEncoder.encode("jack"),
-                    Role.USER
+                    Role.USER,
+                    true
             );
 
             // Save users to the repository
