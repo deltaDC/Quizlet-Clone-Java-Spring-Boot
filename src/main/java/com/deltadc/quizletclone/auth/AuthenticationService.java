@@ -169,7 +169,7 @@ public class AuthenticationService {
         confirmationTokenService.setConfirmedAt(token);
         User u = userRepository.findById(user_id).orElseThrow();
         u.setEnabled(true);
-        return "confirmed";
+        return "Email đã xác thực vui lòng quay trở lại trang <a href='http://localhost:3000/login'>đăng nhập</a>";
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
