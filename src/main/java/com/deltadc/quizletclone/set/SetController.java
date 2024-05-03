@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -113,6 +115,10 @@ public class SetController {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(setDTOPage);
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", setDTOPage);
+        response.put("totalPages", setPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 }

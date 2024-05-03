@@ -19,9 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -100,10 +98,10 @@ public class FolderService {
     public ResponseEntity<?> getSetsInFolder(Long folderId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<FolderSet> fsList = folderSetRepository.findByFolderIdWithPageable(folderId, pageable);
+        Page<FolderSet> fsPage = folderSetRepository.findByFolderIdWithPageable(folderId, pageable);
 
         List<SetDTO> setDTOList = new ArrayList<>();
-        for(FolderSet fs : fsList) {
+        for(FolderSet fs : fsPage) {
             //System.out.println(fs.getFolder_set_id() + " " + fs.getFolder().getFolder_id() + " " + fs.getSet().getSet_id());
             Set s = fs.getSet();
             Long userId = s.getUser_id();
@@ -113,7 +111,11 @@ public class FolderService {
             setDTOList.add(sDTO);
         }
 
-        return ResponseEntity.ok(setDTOList);
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", setDTOList);
+        response.put("totalPages", fsPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
     //tra ve toan bo folder cua user theo userId
