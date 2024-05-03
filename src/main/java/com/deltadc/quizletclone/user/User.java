@@ -6,10 +6,7 @@ import com.deltadc.quizletclone.review.Review;
 import com.deltadc.quizletclone.set.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,6 +60,8 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    private Boolean enabled;
+
     public String getName() {
         return username;
     }
@@ -94,7 +93,8 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+//        setEnabled(false);
+        return enabled;
     }
 
     @Override

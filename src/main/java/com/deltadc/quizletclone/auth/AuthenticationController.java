@@ -51,6 +51,11 @@ public class AuthenticationController {
         return authenticationService.signup(request);
     }
 
+    @GetMapping("/confirm")
+    public String confirm(@RequestParam("token") String token) {
+        return authenticationService.confirmToken(token);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         if(request.getEmail().isEmpty() || request.getPassword().isEmpty()) {
