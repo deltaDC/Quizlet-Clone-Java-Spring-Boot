@@ -156,7 +156,7 @@ public class UserService {
         PasswordResetToken passwordResetToken = new PasswordResetToken(
                 token,
                 u.get().getUser_id(),
-                LocalDateTime.now().plusMinutes(1)
+                LocalDateTime.now().plusMinutes(15)
         );
 
         passwordResetTokenRepository.save(passwordResetToken);
