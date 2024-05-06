@@ -2,7 +2,7 @@ package com.deltadc.quizletclone.auth;
 
 import com.deltadc.quizletclone.auth.authtoken.ConfirmationTokenService;
 import com.deltadc.quizletclone.auth.authtoken.ConfirmationToken;
-import com.deltadc.quizletclone.auth.email.EmailSender;
+import com.deltadc.quizletclone.email.EmailSender;
 import com.deltadc.quizletclone.config.JwtService;
 import com.deltadc.quizletclone.user.Role;
 import com.deltadc.quizletclone.user.User;

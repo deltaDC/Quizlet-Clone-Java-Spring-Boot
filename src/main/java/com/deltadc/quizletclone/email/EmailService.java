@@ -1,4 +1,4 @@
-package com.deltadc.quizletclone.auth.email;
+package com.deltadc.quizletclone.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

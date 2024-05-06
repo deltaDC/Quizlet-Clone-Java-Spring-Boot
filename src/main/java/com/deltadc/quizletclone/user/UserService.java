@@ -1,5 +1,9 @@
 package com.deltadc.quizletclone.user;
 
+import com.deltadc.quizletclone.auth.authtoken.ConfirmationToken;
+import com.deltadc.quizletclone.email.EmailService;
+import com.deltadc.quizletclone.passwordreset.PasswordResetToken;
+import com.deltadc.quizletclone.passwordreset.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,10 +11,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.deltadc.quizletclone.email.EmailSender;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +26,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailSender emailSender;
 
     private boolean isUserOwner(User user) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -133,4 +143,47 @@ public class UserService {
 
         return u;
     }
+
+    public ResponseEntity<?> forgotPassword(String email) {
+
+        Optional<User> u = userRepository.findByEmail(email);
+        if(u.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found with " + email);
+        }
+
+        String token = UUID.randomUUID().toString();
+
+        PasswordResetToken passwordResetToken = new PasswordResetToken(
+                token,
+                u.get().getUser_id(),
+                LocalDateTime.now().plusMinutes(1)
+        );
+
+        passwordResetTokenRepository.save(passwordResetToken);
+
+        //them gui email tai day
+//        String link = "http://localhost:8080/api/auth/confirm-reset-password?token=" + token;
+//        emailSender.send(
+//                email,
+//                link
+//        );
+
+        return ResponseEntity.ok(passwordResetToken);
+    }
+
+    @Transactional
+    public ResponseEntity<?> confirmResetPassword(String token) {
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+
+        Long user_id = passwordResetToken.getUser_id();
+
+        LocalDateTime expiredAt = passwordResetToken.getExpiryDate();
+
+        if (expiredAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("token expired");
+        }
+
+        return ResponseEntity.ok("chuyen sang trang doi mat khau cua user " + user_id);
+    }
+
 }

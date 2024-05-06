@@ -92,4 +92,14 @@ public class UserController {
 
         return ResponseEntity.ok(userDTO);
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
+        return userService.forgotPassword(email);
+    }
+
+    @GetMapping("/confirm-reset-password")
+    public ResponseEntity<?> confirmResetPassword(@RequestParam("token") String token) {
+        return userService.confirmResetPassword(token);
+    }
 }
