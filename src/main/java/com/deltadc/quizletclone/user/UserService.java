@@ -152,6 +152,7 @@ public class UserService {
         }
 
         String token = UUID.randomUUID().toString();
+        Long user_id = u.get().getUser_id();
 
         PasswordResetToken passwordResetToken = new PasswordResetToken(
                 token,
@@ -162,7 +163,7 @@ public class UserService {
         passwordResetTokenRepository.save(passwordResetToken);
 
         //them gui email tai day
-//        String link = "http://localhost:8080/api/auth/confirm-reset-password?token=" + token;
+        String link = "http://localhost:8080/api/auth/confirm-reset-password?token=" + token + "&userId=" + user_id;
 //        emailSender.send(
 //                email,
 //                link
