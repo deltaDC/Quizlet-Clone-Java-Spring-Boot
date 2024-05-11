@@ -99,7 +99,7 @@ public class UserController {
     }
 
     @GetMapping("/confirm-reset-password")
-    public ResponseEntity<?> confirmResetPassword(@RequestParam("token") String token) {
+    public String confirmResetPassword(@RequestParam("token") String token) {
         return userService.confirmResetPassword(token);
     }
 }

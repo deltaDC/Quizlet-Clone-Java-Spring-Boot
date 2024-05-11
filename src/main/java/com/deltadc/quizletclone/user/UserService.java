@@ -173,7 +173,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> confirmResetPassword(String token) {
+    public String confirmResetPassword(String token) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
 
         Long user_id = passwordResetToken.getUser_id();
@@ -184,7 +184,7 @@ public class UserService {
             throw new IllegalStateException("token expired");
         }
 
-        return ResponseEntity.ok("chuyen sang trang doi mat khau cua user " + user_id);
+        return "Email đã xác thực vui lòng quay trở lại trang <a href='http://localhost:3000/reset-password'>Đổi mật khẩu</a>";
     }
 
 }
