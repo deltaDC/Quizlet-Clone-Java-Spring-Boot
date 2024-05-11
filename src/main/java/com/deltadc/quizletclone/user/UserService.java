@@ -82,6 +82,16 @@ public class UserService {
         return user;
     }
 
+    public User resetPasswordByUserId(Long userId, User newUser) {
+        User user = userRepository.findById(userId).orElseThrow();
+
+        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+
+        userRepository.save(user);
+
+        return user;
+    }
+
     public ResponseEntity<?> getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
 

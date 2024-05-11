@@ -102,4 +102,22 @@ public class UserController {
     public String confirmResetPassword(@RequestParam("token") String token) {
         return userService.confirmResetPassword(token);
     }
+
+    //edit mat khau cua 1 user theo userId
+    @PutMapping("/reset-password/{userId}")
+    public ResponseEntity<?> resetPasswordByUserId(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+
+        if(newUser.getPassword().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc de trong");
+        }
+
+        User u = userService.resetPasswordByUserId(userId, newUser);
+        if(u == null) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc doi mat khau voi tai khoan khong phai cua minh");
+        }
+
+        UserDTO userDTO = convertToDTO(u);
+
+        return ResponseEntity.ok(userDTO);
+    }
 }
