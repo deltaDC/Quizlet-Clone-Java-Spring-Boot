@@ -163,7 +163,7 @@ public class UserService {
         passwordResetTokenRepository.save(passwordResetToken);
 
         //them gui email tai day
-        String link = "http://localhost:8080/api/auth/confirm-reset-password?token=" + token + "&userId=" + user_id;
+        String link = "http://localhost:8080/api/user/confirm-reset-password?token=" + token + "&userId=" + user_id;
 //        emailSender.send(
 //                email,
 //                link
@@ -184,7 +184,10 @@ public class UserService {
             throw new IllegalStateException("token expired");
         }
 
-        return "Email đã xác thực vui lòng quay trở lại trang <a href='http://localhost:3000/reset-password'>Đổi mật khẩu</a>";
+        return String.format(
+                "Email đã xác thực vui lòng quay trở lại trang " +
+                        "<a href='http://localhost:3000/reset-password?user_id=%d'>Đổi mật khẩu</a>", user_id
+        );
     }
 
 }
