@@ -48,6 +48,14 @@ public class DataInitializer implements CommandLineRunner {
                     true
             );
 
+            User pdc = new User(
+                    "pdc",
+                    "pdc@gmail.com",
+                    passwordEncoder.encode("pdc"),
+                    Role.ADMIN,
+                    true
+            );
+
 
             User user1 = new User(
                     "Alice",
@@ -130,7 +138,7 @@ public class DataInitializer implements CommandLineRunner {
             );
 
             // Save users to the repository
-            userRepository.saveAll(Arrays.asList(user1, user2, user3, user4, user5, user6, user7, user8, user9, user10));
+            userRepository.saveAll(Arrays.asList(pdc, user, user1, user2, user3, user4, user5, user6, user7, user8, user9, user10));
         }
 
         //tao cac set cua nugoi dung do

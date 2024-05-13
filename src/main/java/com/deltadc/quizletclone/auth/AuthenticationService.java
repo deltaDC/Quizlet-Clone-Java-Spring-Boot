@@ -186,6 +186,7 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .username(user.getName())
                 .user_id(String.valueOf(user.getUser_id()))
+                .role(String.valueOf(user.getRole()))
                 .build();
     }
 }
