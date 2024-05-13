@@ -1,5 +1,6 @@
 package com.deltadc.quizletclone.set;
 
+import com.deltadc.quizletclone.user.Role;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -32,6 +32,11 @@ public class SetService {
         System.out.println("userId id " + userId);
 
         System.out.println("user id of set is " + s.getUser_id());
+
+        if(user.getRole().compareTo(Role.ADMIN) == 0) {
+            System.out.println(user.getRole());
+            return true;
+        }
 
         return Objects.equals(s.getUser_id(), userId);
     }

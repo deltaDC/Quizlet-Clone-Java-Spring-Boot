@@ -5,10 +5,9 @@ import com.deltadc.quizletclone.folderset.FolderSetRepository;
 import com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.set.SetController;
 import com.deltadc.quizletclone.set.SetDTO;
+import com.deltadc.quizletclone.user.Role;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +36,11 @@ public class FolderService {
         // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
         User user = userRepository.findByEmail(username).orElseThrow();
         Long userId = user.getUser_id();
+
+        if(user.getRole().compareTo(Role.ADMIN) == 0) {
+            System.out.println(user.getRole());
+            return true;
+        }
 
         return Objects.equals(userId, f.getUser_id());
     }

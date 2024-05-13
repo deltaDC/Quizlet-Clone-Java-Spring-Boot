@@ -1,7 +1,6 @@
 package com.deltadc.quizletclone.user;
 
-import com.deltadc.quizletclone.auth.authtoken.ConfirmationToken;
-import com.deltadc.quizletclone.email.EmailService;
+import com.deltadc.quizletclone.email.EmailSender;
 import com.deltadc.quizletclone.passwordreset.PasswordResetToken;
 import com.deltadc.quizletclone.passwordreset.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.deltadc.quizletclone.email.EmailSender;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +33,11 @@ public class UserService {
         System.out.println(userMail);
 
         User u = userRepository.findByEmail(userMail).orElseThrow();
+
+        if(user.getRole().compareTo(Role.ADMIN) == 0) {
+            System.out.println(user.getRole());
+            return true;
+        }
 
         return Objects.equals(u.getUser_id(), user.getUser_id());
     }
