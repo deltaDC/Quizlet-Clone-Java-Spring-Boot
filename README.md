@@ -5,7 +5,7 @@ Our Quizlet Clone project uses Java Spring Boot and MySQL for the backend, React
 
 ## Team Members and Roles
 
-### Phạm Đức Chính (B21DCCN181) - Leader, Fullstack
+### Phạm Đức Chính (me) - Leader, Fullstack (>30% of project contribution)
 - Planning and Task Assignment: Coordinated team workflow.
 - Database Design: Designed a flexible, scalable database.
 - Backend API Development: Implemented APIs for user and flashcard management.
@@ -15,7 +15,7 @@ Our Quizlet Clone project uses Java Spring Boot and MySQL for the backend, React
 - Frontend Support: Assisted with UI/UX and API integration.
 - Debugging: Tested and fixed frontend issues.
 
-### Nguyễn Quốc Khánh (B21DCCN456) - Fullstack
+### Nguyễn Quốc Khánh - Fullstack (30% of project contribution)
 - Fullstack Development: Contributed to both frontend and backend.
 - API Development: Created APIs for card and tag management.
 - Database Design: Contributed to backend design.
@@ -23,7 +23,7 @@ Our Quizlet Clone project uses Java Spring Boot and MySQL for the backend, React
 - Pagination: Implemented pagination for cards and folders.
 - Report Writing: Documented project progress.
 
-### Phạm Hữu Đoàn (B21DCCN229) - Frontend
+### Phạm Hữu Đoàn - Frontend (30% of project contribution)
 - UI Development: Built pages like registration, login, and flashcards.
 - Core Features: Developed flashcard games (Learn, Test, Match).
 - Data Validation: Implemented form validations.
@@ -31,7 +31,7 @@ Our Quizlet Clone project uses Java Spring Boot and MySQL for the backend, React
 - User Interaction: Created interactive notifications.
 - Navbar Component: Developed a reusable navbar.
 
-### Nguyễn Đức An (B21DCCN001) - Frontend
+### Nguyễn Đức An - Frontend (10% of project contribution)
 - UI Development: Built home, create set, edit set, and privacy policy pages.
 - Navbar Component: Developed a reusable navbar.
 - API Integration: Connected backend APIs to the frontend.
@@ -52,10 +52,40 @@ Ensure you have the following installed:
 - Docker
 - Docker Compose
 
-### Steps
+### Steps to Deploy
 
-#### Clone the Repository
-```bash
-git clone https://github.com/yourusername/quizlet-clone.git
-cd quizlet-clone
-```
+1. **Clone the Repository:**
+
+    ```bash
+    https://github.com/deltaDC/Quizlet-Clone-Java-Spring-Boot.git
+    ```
+
+2. **Navigate to the Project Directory:**
+
+    ```bash
+    cd path_to_project_in_your_computer
+    ```
+
+3. **Build the Docker Image:**
+
+    ```bash
+    docker-compose build
+    ```
+
+4. **Run the Docker Containers:**
+
+    ```bash
+    docker-compose up -d
+    ```
+
+5. **Access Your Application:**
+
+    Once the containers are up and running, you can access your application by sending request to `http://localhost:8080` in your web browser or in Postman.
+
+## Documentation
+
+For detailed documentation, please refer to the [this PDF report](https://drive.google.com/file/d/1O2e_e0efrJXfuhF2nRZ1GuWEgkWo8iUP/view?usp=sharing).
+
+## Conclusion
+
+Quizlet clone may have some bugs and missing features. Please be aware that the development team is no longer actively working on the project. Your understanding is appreciated, and feel free to provide feedback for potential improvements.
