@@ -49,8 +49,7 @@ To deploy the Quizlet Clone project using Docker, follow these steps:
 
 ### Prerequisites
 Ensure you have the following installed:
-- Docker
-- Docker Compose
+- Docker desktop
 
 ### Steps to Deploy
 
