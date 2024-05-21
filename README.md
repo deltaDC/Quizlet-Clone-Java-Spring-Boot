@@ -83,7 +83,7 @@ Ensure you have the following installed:
 
 ## Documentation
 
-For detailed documentation, please refer to the [this PDF report](https://drive.google.com/file/d/1O2e_e0efrJXfuhF2nRZ1GuWEgkWo8iUP/view?usp=sharing).
+For detailed documentation, please refer to [this PDF report](https://drive.google.com/file/d/1O2e_e0efrJXfuhF2nRZ1GuWEgkWo8iUP/view?usp=sharing).
 
 ## Conclusion
 
