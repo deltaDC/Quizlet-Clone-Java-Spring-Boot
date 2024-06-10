@@ -28,45 +28,22 @@ public class FolderService {
     private final FolderSetRepository folderSetRepository;
     private final SetController setController;
 
-    private boolean isFolderOwner(Folder f) {
-        // Trích xuất thông tin người dùng từ JWT
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
 
-        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-        User user = userRepository.findByEmail(username).orElseThrow();
-        Long userId = user.getUser_id();
 
-        if(user.getRole().compareTo(Role.ADMIN) == 0) {
-            System.out.println(user.getRole());
-            return true;
-        }
+    public Folder createFolder(Folder folder) {
 
-        return Objects.equals(userId, f.getUser_id());
+        Folder createdFolder = new Folder(
+                folder.getUser_id(),
+                folder.getTitle(),
+                folder.getDescription(),
+                folder.isPublic()
+        );
+
+        return folderRepository.save(createdFolder);
     }
 
-    public ResponseEntity<?> createFolder(Folder folder) {
-        if(folder.getTitle().length() <= 0 || folder.getDescription().length() <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
-        }
-
-
-        Folder createdFolder = new Folder();
-        createdFolder.setTitle(folder.getTitle());
-        createdFolder.setDescription(folder.getDescription());
-        createdFolder.setPublic(folder.isPublic());
-        createdFolder.setUser_id(folder.getUser_id());
-
-        Folder savedFolder = folderRepository.save(createdFolder);
-//        FolderDTO folderDTO = new FolderDTO();
-//        folderDTO.setFolderId(savedFolder.getFolder_id());
-//        folderDTO.setTitle(savedFolder.getTitle());
-//        folderDTO.setDescription(savedFolder.getDescription());
-//        folderDTO.setCreatedAt(savedFolder.getCreatedAt());
-//        folderDTO.setUpdatedAt(savedFolder.getUpdatedAt());
-//        folderDTO.setPublic(savedFolder.isPublic());
-
-        return ResponseEntity.ok(savedFolder);
+    public Folder getFolderById(Long id) {
+        return folderRepository.findById(id).get();
     }
 
     public Page<Folder> getAllFolders(int page, int size) {
@@ -83,19 +60,8 @@ public class FolderService {
         return publicFolders;
     }
 
-    public ResponseEntity<String> deleteFolder(Long folderId) {
-
-        Folder f = folderRepository.findById(folderId).orElse(null);
-        if(f == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Folder không tồn tại");
-        }
-
-        if (!isFolderOwner(f)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép xóa khi không sở hữu folder");
-        }
-
+    public void deleteFolder(Long folderId) {
         folderRepository.deleteById(folderId);
-        return ResponseEntity.ok("Xóa folder thành công");
     }
 
 
@@ -128,12 +94,8 @@ public class FolderService {
         return folderRepository.findByUserId(userId);
     }
 
-    public ResponseEntity<?> editFolderById(Long folderId, Folder newFolder) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow();
-
-        if(!isFolderOwner(folder)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép sửa khi không sở hữu folder");
-        }
+    public Folder editFolderById(Long folderId, Folder newFolder) {
+        Folder folder = folderRepository.findById(folderId).get();
 
         folder.setTitle(newFolder.getTitle());
         folder.setDescription(newFolder.getDescription());
@@ -141,7 +103,7 @@ public class FolderService {
 
         folderRepository.save(folder);
 
-        return ResponseEntity.ok(folder);
+        return folder;
     }
 
     public Page<Folder> getFolderByTitle(String title, int page, int size) {

@@ -3,18 +3,28 @@ package com.deltadc.quizletclone.folder;
 import lombok.Getter;
 import lombok.Setter;
 
+@Setter
+@Getter
 public class FolderDTO {
 
-    @Getter @Setter
     private Long folderId;
-    @Getter @Setter
+
     private String title;
-    @Getter @Setter
+
     private String description;
-    @Getter @Setter
+
     private String createdAt;
-    @Getter @Setter
+
     private String updatedAt;
-    @Getter @Setter
+
     private boolean isPublic;
+
+    public FolderDTO(Long folderId, String title, String description, String createdAt, String updatedAt, boolean isPublic) {
+        this.folderId = folderId;
+        this.title = title;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.isPublic = isPublic;
+    }
 }
