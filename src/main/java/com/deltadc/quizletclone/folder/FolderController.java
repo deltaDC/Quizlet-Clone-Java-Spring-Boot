@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/folder")
-@CrossOrigin(origins = "http://localhost:3000")
 public class FolderController {
     private final FolderService folderService;
 

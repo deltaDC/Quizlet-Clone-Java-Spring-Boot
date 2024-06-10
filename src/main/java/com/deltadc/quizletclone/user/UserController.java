@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController // danh dau class nay la RESTful Controller
 @RequiredArgsConstructor // tự động tạo một constructor chứa tất cả các trường được đánh dấu là final hoặc @NonNull.
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/user")
 public class UserController {
 

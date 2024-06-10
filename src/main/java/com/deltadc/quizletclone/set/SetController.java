@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/set")
-@CrossOrigin(origins = "http://localhost:3000")
 public class SetController {
     private final SetService setService;
     private final UserRepository userRepository;
