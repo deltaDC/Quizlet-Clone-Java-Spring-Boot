@@ -26,62 +26,33 @@ public class CardService {
     private final SetRepository setRepository;
     private final UserRepository userRepository;
 
-    private boolean isCardOwner(Long cardId) {
-        // Trích xuất thông tin người dùng từ JWT
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
-
-        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-        User user = userRepository.findByEmail(username).orElseThrow();
-        Long userId = user.getUser_id();
-        System.out.println("userId is " + userId);
-
-        Card c = cardRepository.findById(cardId).orElseThrow();
-
-        Long setId = c.getSet_id();
-        Set s = setRepository.findById(setId).orElseThrow();
-        System.out.println("user id of set is " + s.getUser_id());
-
-        return Objects.equals(s.getUser_id(), userId);
-    }
 
     // Các phương thức xử lý Card
-    public ResponseEntity<?> getAllCards() {
+    public List<CardDTO> getAllCards() {
         List<Card> cards = cardRepository.findAll();
         List<CardDTO> cardDTOS = new ArrayList<>();
         for (Card card : cards) {
             cardDTOS.add(new CardDTO(card));
         }
-        return ResponseEntity.ok(cardDTOS);
+        return cardDTOS;
     }
 
-    public ResponseEntity<?> getCardById(Long id) {
-        Card card = cardRepository.findById(id).orElse(null);
-        if (card == null) {
-            return ResponseEntity.badRequest().body("Cannot find this card!");
-        }
-        CardDTO cardDTO = new CardDTO(card);
-        return ResponseEntity.ok(cardDTO);
+    public CardDTO getCardById(Long id) {
+        Card card = cardRepository.findById(id).orElseThrow();
+        return new CardDTO(card);
     }
 
-    public ResponseEntity<?> getCardsInSet(Long set_id, int page, int size) {
-        Set set = setRepository.findById(set_id).orElse(null);
-        if (set == null) {
-            return ResponseEntity.badRequest().body("Cannot find this set!");
-        }
+    public Page<CardDTO> getCardsInSet(Long set_id, int page, int size) {
+        Set set = setRepository.findById(set_id).orElseThrow();
         Page<Card> cards = cardRepository.findCardsBySetId(set_id, PageRequest.of(page, size));
-        Page<CardDTO> cardDTOS = cards.map(CardDTO::new);
-        return ResponseEntity.ok(cardDTOS);
+        return cards.map(CardDTO::new);
     }
 
-    public ResponseEntity<?> createCard(Card card, Long set_id) {
-        Set set = setRepository.findById(set_id).orElse(null);
-        if (set == null) {
-            return ResponseEntity.badRequest().body("Cannot find this set!");
-        }
+    public Card createCard(Card card, Long set_id) throws Exception {
+        Set set = setRepository.findById(set_id).orElseThrow();
 
-        if(card.getFront_text().length() <= 0 || card.getBack_text().length() <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc de trong");
+        if(card.getFront_text().isEmpty() || card.getBack_text().isEmpty()) {
+            throw new Exception("card should not be empty");
         }
 
         Card newCard = new Card();
@@ -91,50 +62,38 @@ public class CardService {
         newCard.setBack_text(card.getBack_text());
         newCard.setSet_id(set.getSet_id());
         cardRepository.save(newCard);
-        return ResponseEntity.ok(newCard);
+        return newCard;
     }
 
-    public ResponseEntity<?> updateCard(Long id, Card updatedCard) {
-        if(!isCardOwner(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("khong duoc sua card khi khong phai chu so huu");
-        }
+    public CardDTO updateCard(Long id, Card updatedCard) {
 
-        Card existingCard = cardRepository.findById(id).orElse(null);
-        if (existingCard != null) {
-            existingCard.setFront_text(updatedCard.getFront_text());
-            existingCard.setBack_text(updatedCard.getBack_text());
-            existingCard.onUpdate();
-            cardRepository.save(existingCard);
-            return ResponseEntity.ok(new CardDTO(existingCard));
-        }
-        return ResponseEntity.badRequest().body("Cannot find card");
+        Card existingCard = cardRepository.findById(id).orElseThrow();
+
+        existingCard.setFront_text(updatedCard.getFront_text());
+        existingCard.setBack_text(updatedCard.getBack_text());
+        existingCard.onUpdate();
+        cardRepository.save(existingCard);
+
+        return new CardDTO(existingCard);
+
     }
 
-    public ResponseEntity<?> deleteCard(Long id) {
-        System.out.println(isCardOwner(id));
-        if(!isCardOwner(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("khong duoc xoa card khi khong phai chu so huu");
-        }
+    public void deleteCard(Long id) {
 
-        Card card = cardRepository.findById(id).orElse(null);
-        if (card == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        Card card = cardRepository.findById(id).orElseThrow();
         cardRepository.deleteById(id);
-        return ResponseEntity.ok("Deleted!");
     }
 
-    public ResponseEntity<?> createCards(Long setId, List<Card> cardList) {
+    public List<Card> createCards(Long setId, List<Card> cardList) throws Exception {
 
         Optional<Set> set = setRepository.findById(setId);
 
         if(set.isPresent()) {
             cardList.forEach(card -> card.setSet_id(setId));
 
-            List<Card> savedCards = cardRepository.saveAll(cardList);
-            return ResponseEntity.ok(savedCards);
+            return cardRepository.saveAll(cardList);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Set khong ton tai");
+            throw new Exception("set is not found");
         }
 
     }
