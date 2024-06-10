@@ -24,20 +24,14 @@ public class FolderSetService {
     private final FolderSetRepository folderSetRepository;
     private final UserRepository userRepository;
 
-    public ResponseEntity<?> createFolderSet(FolderSet folderSet) {
-        Folder f = folderRepository.findById(folderSet.getFolder_id()).orElse(null);
-        if (f == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Folder không tồn tại");
-        }
+    public FolderSet createFolderSet(FolderSet folderSet) {
+        Folder f = folderRepository.findById(folderSet.getFolder_id()).orElseThrow();
 
-        Set s = setRepository.findById(folderSet.getSet_id()).orElse(null);
-        if (s == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set không tồn tại");
-        }
+        Set s = setRepository.findById(folderSet.getSet_id()).orElseThrow();
 
         Optional<FolderSet> fs = folderSetRepository.findByFolderIdAndSetId(f.getFolder_id(), s.getSet_id());
         if(fs.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set da ton tai trong folder");
+            throw new RuntimeException("set is already in folder");
         } else {
             FolderSet new_fs = new FolderSet();
             new_fs.setFolder_id(f.getFolder_id());
@@ -45,55 +39,34 @@ public class FolderSetService {
 
             folderSetRepository.save(new_fs);
 
-            return ResponseEntity.ok(new_fs);
+            return new_fs;
         }
     }
 
-    public ResponseEntity<String> deleteFolderSetById(Long folderSetId) {
-        // Trích xuất thông tin người dùng từ JWT
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
+    public void deleteFolderSetById(Long folderSetId) {
 
-        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-        User user = userRepository.findByEmail(username).orElse(null);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng không tồn tại");
-        }
-
-        FolderSet fs = folderSetRepository.findById(folderSetId).orElse(null);
-        if(fs == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Folder set không tồn tại");
-        }
+        FolderSet fs = folderSetRepository.findById(folderSetId).orElseThrow();
 
         folderSetRepository.deleteById(folderSetId);
-        return ResponseEntity.ok("Xóa folder set thành công");
     }
 
-    public ResponseEntity<?> getFolderSetById(Long folderSetId) {
-        FolderSet folderSet = folderSetRepository.findById(folderSetId).orElseThrow();
-
-        return ResponseEntity.ok(folderSet);
+    public FolderSet getFolderSetById(Long folderSetId) {
+        return folderSetRepository.findById(folderSetId).orElseThrow();
     }
 
-    public ResponseEntity<?> getAllFolderSets() {
-        List<FolderSet> folderSets = folderSetRepository.findAll();
-
-        return ResponseEntity.ok(folderSets);
+    public List<FolderSet> getAllFolderSets() {
+        return folderSetRepository.findAll();
     }
 
-    public ResponseEntity<?> getFolderSetByFolderId(Long folderId) {
-        List<FolderSet> folderSets = folderSetRepository.findByFolderId(folderId);
-
-        return ResponseEntity.ok(folderSets);
+    public List<FolderSet> getFolderSetByFolderId(Long folderId) {
+        return folderSetRepository.findByFolderId(folderId);
     }
 
-    public ResponseEntity<?> getFolderSetBySetId(Long setId) {
-        List<FolderSet> folderSets = folderSetRepository.findBySetId(setId);
-
-        return ResponseEntity.ok(folderSets);
+    public List<FolderSet> getFolderSetBySetId(Long setId) {
+        return folderSetRepository.findBySetId(setId);
     }
 
-    public ResponseEntity<?> editFolderSetById(Long folderSetId, FolderSet newFolderSet) {
+    public FolderSet editFolderSetById(Long folderSetId, FolderSet newFolderSet) {
         FolderSet folderSet = folderSetRepository.findById(folderSetId).orElseThrow();
 
         folderSet.setFolder_id(newFolderSet.getFolder_id());
@@ -101,14 +74,12 @@ public class FolderSetService {
 
         folderSetRepository.save(folderSet);
 
-        return ResponseEntity.ok(folderSet);
+        return folderSet;
     }
 
-    public ResponseEntity<?> deleteSetFromFolder(Long folderSetId, Long setId) {
+    public void deleteSetFromFolder(Long folderSetId, Long setId) {
         FolderSet fs = folderSetRepository.findByFolderIdAndSetId(folderSetId, setId).orElseThrow();
 
         folderSetRepository.delete(fs);
-
-        return ResponseEntity.ok("da xoa folderset voi id: " + folderSetId + " va set voi id " + setId);
     }
 }
