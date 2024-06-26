@@ -3,6 +3,7 @@ package com.deltadc.quizletclone.set;
 
 import com.deltadc.quizletclone.card.Card;
 import com.deltadc.quizletclone.card.CardRepository;
+import com.deltadc.quizletclone.response.ResponseObject;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,67 +52,124 @@ public class SetController {
 
     // tạo set mới
     @PostMapping("/create-set")
-    public ResponseEntity<?> createSet(@RequestBody Set set) {
+    public ResponseEntity<ResponseObject> createSet(@RequestBody Set set) {
         if(isEmptySetInput(set)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("khong duoc de trong");
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("set is invalid")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
         }
 
-        return setService.createSet(set);
+        Set createdSet = setService.createSet(set);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("set created")
+                        .status(HttpStatus.OK)
+                        .data(createdSet)
+                        .build()
+        );
     }
 
     // lấy tất cả set của người dùng theo userId
     @GetMapping("/{user_id}/sets")
-    public ResponseEntity<?> getUserSets(@PathVariable("user_id") Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getUserSets(@PathVariable("user_id") Long userId,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "30") int size) {
+
         Page<Set> userSets = setService.getUserSets(userId, page, size);
 
         List<SetDTO> setDTOPage = userSets.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
+        //TODO change to using mapper
         Map<String, Object> response = new HashMap<>();
         response.put("content", setDTOPage);
         response.put("totalPages", userSets.getTotalPages());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("user's sets fetched")
+                        .status(HttpStatus.OK)
+                        .data(response)
+                        .build()
+        );
     }
 
     // xóa set dựa trên setId
     @DeleteMapping("/{setId}")
-    public ResponseEntity<?> deleteSet(@PathVariable("setId") Long setId) {
-        return setService.deleteSet(setId);
+    public ResponseEntity<ResponseObject> deleteSet(@PathVariable("setId") Long setId) {
+        String response = setService.deleteSet(setId);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message(response)
+                        .status(HttpStatus.OK)
+                        .build()
+        );
     }
 
     //lay toan bo cac set
     @GetMapping("/get-all-sets")
-    public ResponseEntity<?> getAllSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
-        return setService.getAllSets(page, size);
+    public ResponseEntity<ResponseObject> getAllSets(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "30") int size) {
+        Page<Set> allSets = setService.getAllSets(page, size);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("all sets fetched")
+                        .status(HttpStatus.OK)
+                        .data(allSets)
+                        .build()
+        );
     }
 
     //edit mot set theo setId
     @PutMapping("/edit/{setId}")
-    public ResponseEntity<?> editSetById(@PathVariable("setId") Long setId, @RequestBody Set newSet) {
+    public ResponseEntity<ResponseObject> editSetById(@PathVariable("setId") Long setId, @RequestBody Set newSet) {
         if(isEmptySetInput(newSet)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("khong duoc de trong");
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("set is invalid")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
         }
 
-        return setService.editSetById(setId, newSet);
+        Set updatedSet = setService.editSetById(setId, newSet);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Set updated")
+                        .status(HttpStatus.OK)
+                        .data(updatedSet)
+                        .build()
+        );
     }
 
     //lay tat ca cac public set
     @GetMapping("/get-public-sets")
-    public ResponseEntity<?> getPublicSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getPublicSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getPublicSet(page, size);
 
         List<SetDTO> setDTOPage = setPage.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(setDTOPage);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Public set fetched")
+                        .status(HttpStatus.OK)
+                        .data(setDTOPage)
+                        .build()
+        );
     }
 
     //tim set theo title
     @GetMapping("/title/{title}")
-    public ResponseEntity<?> getSetByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getSetByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getSetByTitle(title, page, size);
 
         List<SetDTO> setDTOPage = setPage.stream()
@@ -122,6 +180,12 @@ public class SetController {
         response.put("content", setDTOPage);
         response.put("totalPages", setPage.getTotalPages());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("sets with title fetched")
+                        .status(HttpStatus.OK)
+                        .data(response)
+                        .build()
+        );
     }
 }

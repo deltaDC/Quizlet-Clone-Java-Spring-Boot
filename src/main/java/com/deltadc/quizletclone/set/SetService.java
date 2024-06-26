@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -41,17 +39,14 @@ public class SetService {
         return Objects.equals(s.getUser_id(), userId);
     }
 
-    public ResponseEntity<?> createSet(Set set) {
+    public Set createSet(Set set) {
         Set createdSet = new Set();
         createdSet.setTitle(set.getTitle());
         createdSet.setDescription(set.getDescription());
         createdSet.setPublic(set.isPublic());
         createdSet.setUser_id(set.getUser_id());
 
-        Set savedSet = setRepository.save(createdSet);
-
-        // Trả về đối tượng set vừa được tạo trong phản hồi ResponseEntity
-        return ResponseEntity.ok(savedSet);
+        return setRepository.save(createdSet);
     }
 
     //tra ve toan bo set cua nguoi dung theo userId
@@ -62,36 +57,31 @@ public class SetService {
         return setRepository.findByUserId(userId, pageable);
     }
 
-    public ResponseEntity<String> deleteSet(Long setId) {
+    public String deleteSet(Long setId) {
         Set s = setRepository.findById(setId).orElse(null);
         if(s == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set không tồn tại");
+            return "Set is not exist";
         }
 
         if(!isSetOwner(s)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép xóa nếu không phải chủ sở hữu");
+            return "Unauthorized";
         }
 
         setRepository.deleteById(setId);
-        return ResponseEntity.ok("Xóa set thành công");
+        return "Set is deleted";
     }
 
-    public ResponseEntity<?> getAllSets(int page, int size) {
-//        List<Set> setList = setRepository.findAll();
-
+    public Page<Set> getAllSets(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Set> setPage = setRepository.findAll(pageable);
-
-        return ResponseEntity.ok(setPage);
-
+        return setRepository.findAll(pageable);
     }
 
-    public ResponseEntity<?> editSetById(Long setId, Set newSet) {
+    public Set editSetById(Long setId, Set newSet) {
         Set set = setRepository.findById(setId).orElseThrow();
 
         if(!isSetOwner(set)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được phép sửa nếu không phải chủ sở hữu");
+            return null;
         }
 
         set.setTitle(newSet.getTitle());
@@ -100,7 +90,7 @@ public class SetService {
 
         setRepository.save(set);
 
-        return ResponseEntity.ok(set);
+        return set;
     }
 
     public Page<Set> getPublicSet(int page, int size) {
