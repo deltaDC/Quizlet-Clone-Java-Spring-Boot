@@ -1,10 +1,10 @@
 package com.deltadc.quizletclone.user;
 
+import com.deltadc.quizletclone.passwordreset.PasswordResetToken;
+import com.deltadc.quizletclone.response.ResponseObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,73 +28,152 @@ public class UserController {
 
     //lay ra toan bo user
     @GetMapping("/get-all-users")
-    public ResponseEntity<?> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<ResponseObject> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Users found")
+                        .data(users)
+                        .status(HttpStatus.OK)
+                        .build()
+        );
     }
 
     //xoa user theo id
     @DeleteMapping("/delete-user/{userId}")
-    public ResponseEntity<?> deleteUserById(@PathVariable("userId") Long userId) {
-        return userService.deleteUserById(userId);
+    public ResponseEntity<ResponseObject> deleteUserById(@PathVariable("userId") Long userId) {
+        String response = userService.deleteUserById(userId);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message(response)
+                        .status(HttpStatus.OK)
+                        .build()
+        );
     }
 
     //edit mat khau cua 1 user theo userId
     @PutMapping("/change-password/{userId}")
-    public ResponseEntity<?> changeUserPassWordById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+    public ResponseEntity<ResponseObject> changeUserPassWordById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
 
         if(newUser.getPassword().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc de trong");
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Invalid")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
         }
 
         User u = userService.changeUserPassWordById(userId, newUser);
         if(u == null) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc doi mat khau voi tai khoan khong phai cua minh");
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Unauthorized")
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
         }
 
         UserDTO userDTO = convertToDTO(u);
 
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("password changed")
+                        .status(HttpStatus.OK)
+                        .data(userDTO)
+                        .build()
+        );
     }
 
     //lay user dua theo user id
     @GetMapping("/{user_id}")
-    public ResponseEntity<?> getUserById(@PathVariable("user_id") Long userId) {
-        return userService.getUserById(userId);
+    public ResponseEntity<ResponseObject> getUserById(@PathVariable("user_id") Long userId) {
+        UserDTO userDTO = userService.getUserById(userId);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("User found")
+                        .data(userDTO)
+                        .status(HttpStatus.OK)
+                        .build()
+        );
     }
 
     //lay user dua theo username
     @GetMapping("/username/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable("username") String username) {
-        return userService.getUserByUsername(username);
+    public ResponseEntity<ResponseObject> getUserByUsername(@PathVariable("username") String username) {
+        UserDTO userDTO = userService.getUserByUsername(username);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("User found")
+                        .data(userDTO)
+                        .status(HttpStatus.OK)
+                        .build()
+        );
     }
 
     //lay user dua theo email
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable("email") String email) {
-        return userService.getUserByEmail(email);
+        UserDTO userDTO = userService.getUserByEmail(email);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("User found")
+                        .data(userDTO)
+                        .status(HttpStatus.OK)
+                        .build()
+        );
     }
 
     @PutMapping("/change-username/{userId}")
-    public ResponseEntity<?> changeUsernameById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+    public ResponseEntity<ResponseObject> changeUsernameById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
 
         if(newUser.getName().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc de trong");
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Invalid")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
         }
 
         User u = userService.changeUsernameById(userId, newUser);
 
         if(u == null) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc doi ten voi tai khoan khong phai cua minh");
+             return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Unauthorized")
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
         }
 
         UserDTO userDTO = convertToDTO(u);
 
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("password changed")
+                        .status(HttpStatus.OK)
+                        .data(userDTO)
+                        .build()
+        );
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
-        return userService.forgotPassword(email);
+    public ResponseEntity<ResponseObject> forgotPassword(@RequestParam("email") String email) {
+        PasswordResetToken token = userService.forgotPassword(email);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("token sent to email")
+                        .status(HttpStatus.OK)
+                        .data(token)
+                        .build()
+        );
     }
 
     @GetMapping("/confirm-reset-password")
@@ -104,19 +183,35 @@ public class UserController {
 
     //edit mat khau cua 1 user theo userId
     @PutMapping("/reset-password/{userId}")
-    public ResponseEntity<?> resetPasswordByUserId(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+    public ResponseEntity<ResponseObject> resetPasswordByUserId(@PathVariable("userId") Long userId, @RequestBody User newUser) {
 
         if(newUser.getPassword().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc de trong");
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Invalid")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
         }
 
         User u = userService.resetPasswordByUserId(userId, newUser);
         if(u == null) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc doi mat khau voi tai khoan khong phai cua minh");
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Unauthorized")
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
         }
 
         UserDTO userDTO = convertToDTO(u);
 
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("password changed")
+                        .status(HttpStatus.OK)
+                        .data(userDTO)
+                        .build()
+        );
     }
 }

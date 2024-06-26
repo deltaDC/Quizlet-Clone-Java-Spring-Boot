@@ -4,8 +4,6 @@ import com.deltadc.quizletclone.email.EmailSender;
 import com.deltadc.quizletclone.passwordreset.PasswordResetToken;
 import com.deltadc.quizletclone.passwordreset.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +40,7 @@ public class UserService {
         return Objects.equals(u.getUser_id(), user.getUser_id());
     }
 
-    public ResponseEntity<?> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         List<User> userList = userRepository.findAll();
         List<UserDTO> userDTOS = userList.stream()
                 .map(user -> {
@@ -56,19 +54,19 @@ public class UserService {
                 }).toList();
 
 
-        return ResponseEntity.ok(userDTOS);
+        return userDTOS;
     }
 
-    public ResponseEntity<?> deleteUserById(Long userId) {
+    public String deleteUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
 
         if(!isUserOwner(user)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Khong duoc xoa tai khoan voi tai khoan khong phai cua minh");
+            return "Unauthorized";
         }
 
         userRepository.delete(user);
 
-        return ResponseEntity.ok("da xoa user " + userId);
+        return "User deleted";
     }
 
     public User changeUserPassWordById(Long userId, User newUser) {
@@ -95,7 +93,7 @@ public class UserService {
         return user;
     }
 
-    public ResponseEntity<?> getUserById(Long userId) {
+    public UserDTO getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
 
         if(user.isPresent()) {
@@ -105,13 +103,13 @@ public class UserService {
             userDTO.setEmail(user.get().getEmail());
             userDTO.setRole(user.get().getRole());
 
-            return ResponseEntity.ok(userDTO);
+            return userDTO;
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User khong ton tai");
+            return null;
         }
     }
 
-    public ResponseEntity<?> getUserByUsername(String username) {
+    public UserDTO getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
 
         if(user.isPresent()) {
@@ -121,13 +119,13 @@ public class UserService {
             userDTO.setEmail(user.get().getEmail());
             userDTO.setRole(user.get().getRole());
 
-            return ResponseEntity.ok(userDTO);
+            return userDTO;
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User khong ton tai");
+            return null;
         }
     }
 
-    public ResponseEntity<?> getUserByEmail(String email) {
+    public UserDTO getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
 
         if(user.isPresent()) {
@@ -137,9 +135,9 @@ public class UserService {
             userDTO.setEmail(user.get().getEmail());
             userDTO.setRole(user.get().getRole());
 
-            return ResponseEntity.ok(userDTO);
+            return userDTO;
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User khong ton tai");
+            return null;
         }
     }
 
@@ -157,11 +155,11 @@ public class UserService {
         return u;
     }
 
-    public ResponseEntity<?> forgotPassword(String email) {
+    public PasswordResetToken forgotPassword(String email) {
 
         Optional<User> u = userRepository.findByEmail(email);
         if(u.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found with " + email);
+            return null;
         }
 
         String token = UUID.randomUUID().toString();
@@ -182,7 +180,7 @@ public class UserService {
 //                link
 //        );
 
-        return ResponseEntity.ok(passwordResetToken);
+        return passwordResetToken;
     }
 
     @Transactional
