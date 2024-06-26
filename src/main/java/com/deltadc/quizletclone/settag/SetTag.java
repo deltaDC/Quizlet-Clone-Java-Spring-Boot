@@ -34,4 +34,9 @@ public class SetTag {
 
     private Long set_id;
     private Long tag_id;
+
+    public SetTag(Long setId, Long tagId) {
+        this.set_tag_id = setId;
+        this.tag_id = tagId;
+    }
 }

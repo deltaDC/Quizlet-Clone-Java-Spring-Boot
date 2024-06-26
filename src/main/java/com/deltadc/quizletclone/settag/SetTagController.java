@@ -1,9 +1,12 @@
 package com.deltadc.quizletclone.settag;
 
-import com.deltadc.quizletclone.set.Set;
+import com.deltadc.quizletclone.response.ResponseObject;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -13,31 +16,71 @@ public class SetTagController {
 
     //tao set tag moi
     @PostMapping("/create-set-tag")
-    public ResponseEntity<?> createSetTag(@RequestBody SetTag setTag) {
-        return setTagService.createSetTag(setTag);
+    public ResponseEntity<ResponseObject> createSetTag(@RequestBody SetTag setTag) {
+        SetTag createdSetTag = setTagService.createSetTag(setTag);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Successfully created set-tag")
+                        .status(HttpStatus.OK)
+                        .data(createdSetTag)
+                        .build()
+        );
     }
 
     //xoa set tag theo id
     @DeleteMapping("/{set_tag_id}")
-    public ResponseEntity<?> deleteSetTag(@PathVariable("set_tag_id") Long set_tag_id) {
-        return setTagService.deleteSetTag(set_tag_id);
+    public ResponseEntity<ResponseObject> deleteSetTag(@PathVariable("set_tag_id") Long set_tag_id) {
+        String response = setTagService.deleteSetTag(set_tag_id);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Successfully deleted set-tag")
+                        .status(HttpStatus.OK)
+                        .data(response)
+                        .build()
+        );
     }
 
     //lay set-tag theo setId
     @GetMapping("/set/{setId}")
-    public ResponseEntity<?> getSetTagBySetId(@PathVariable("setId") Long setId) {
-        return setTagService.getSetTagBySetId(setId);
+    public ResponseEntity<ResponseObject> getSetTagBySetId(@PathVariable("setId") Long setId) {
+        SetTag setTag = setTagService.getSetTagBySetId(setId);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Successfully retrieved set-tag")
+                        .status(HttpStatus.OK)
+                        .data(setTag)
+                        .build()
+        );
     }
 
     //lay tat ca cac set tag
     @GetMapping("/get-all-set-tags")
-    public ResponseEntity<?> getAllSetTags() {
-        return setTagService.getAllSetTags();
+    public ResponseEntity<ResponseObject> getAllSetTags() {
+        List<SetTag> setTagList = setTagService.getAllSetTags();
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Successfully retrieved set-tags")
+                        .status(HttpStatus.OK)
+                        .data(setTagList)
+                        .build()
+        );
     }
 
     //lay ra tag name cua mot set
     @GetMapping("/set/{setId}/tag-name")
-    public ResponseEntity<?> getTagNameBySetId(@PathVariable("setId") Long setId) {
-        return setTagService.getTagNameBySetId(setId);
+    public ResponseEntity<ResponseObject> getTagNameBySetId(@PathVariable("setId") Long setId) {
+        String tagName = setTagService.getTagNameBySetId(setId);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Successfully retrieved tag-name")
+                        .status(HttpStatus.OK)
+                        .data(tagName)
+                        .build()
+        );
     }
 }
