@@ -4,7 +4,6 @@ import com.deltadc.quizletclone.set.SetRepository;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,71 +47,66 @@ public class ReviewService {
     }
 
 
-    public ResponseEntity<?> postSetReviews(@PathVariable Long setId, @RequestBody Review review) {
+    public Review postSetReviews(@PathVariable Long setId, @RequestBody Review review) {
         Long userId = review.getUser_id();
 
         // Kiểm tra xem user đã review set này trước đó chưa
         boolean hasReviewed = reviewRepository.existsBySetIdAndUserId(setId, userId);
         if (hasReviewed) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Người dùng đã review set này trước đó");
+            return null;
         }
 
         boolean isOwner = setRepository.findById(setId).get().getUser_id() == userId;
         if(isOwner) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("khong duoc tao review voi set cua ban than");
+            return null;
         }
 
-        Review createdReview = new Review();
-        createdReview.setSet_id(review.getSet_id());
-        createdReview.setUser_id(review.getUser_id());
-        createdReview.setTotalStars(review.getTotalStars());
+        Review createdReview = new Review(
+                review.getUser_id(),
+                review.getSet_id(),
+                review.getTotalStars()
+        );
 
         reviewRepository.save(createdReview);
 
-        return ResponseEntity.ok(createdReview);
+        return createdReview;
     }
 
-    public ResponseEntity<?> getAllReviews() {
-        List<Review> reviews = reviewRepository.findAll();
-
-        return ResponseEntity.ok(reviews);
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAll();
     }
 
-    public ResponseEntity<?> getReviewsByUserId(Long userId) {
-        List<Review> reviews = reviewRepository.findByUserId(userId);
-
-        return ResponseEntity.ok(reviews);
+    public List<Review> getReviewsByUserId(Long userId) {
+        return reviewRepository.findByUserId(userId);
     }
 
-    public ResponseEntity<?> editReviewById(Long reviewId, Review newReview) {
+    public Review editReviewById(Long reviewId, Review newReview) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
         if(!isReviewOwner(review)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được sửa review nếu không phải chủ sở hữu");
+            return null;
         }
 
         review.setTotalStars(newReview.getTotalStars());
 
         reviewRepository.save(review);
 
-        return ResponseEntity.ok(review);
+        return review;
     }
 
-    public ResponseEntity<?> deleteReviewById(Long reviewId) {
+    public String deleteReviewById(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
         if(!isReviewOwner(review)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Không được xóa review nếu không phải chủ sở hữu");
+            return null;
         }
 
         reviewRepository.delete(review);
 
-        return ResponseEntity.ok("Đã xóa review");
+        return "Review delete";
     }
 
-    public ResponseEntity<?> getReviewByUserIdAndSetId(Long setId, Long userId) {
-        Review review = reviewRepository.findBySetIdAndUserId(setId, userId);
-
-        return ResponseEntity.ok(review);
+    public Review getReviewByUserIdAndSetId(Long setId, Long userId) {
+        return reviewRepository.findBySetIdAndUserId(setId, userId);
     }
 }
