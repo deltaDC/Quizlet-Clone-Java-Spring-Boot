@@ -16,13 +16,10 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     private boolean isValidEmail(String email) {
-        // Regular expression for email validation
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
-        // Compile the regex pattern
         Pattern pattern = Pattern.compile(emailRegex);
 
-        // If the email matches the regex pattern, return true; otherwise, return false
         return pattern.matcher(email).matches();
     }
 
@@ -33,7 +30,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(
                             AuthenticationResponse.builder()
-                                    .message("khong duoc de trong")
+                                    .message("Username or email address is required")
                                     .build()
                     );
         }
@@ -42,7 +39,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(
                             AuthenticationResponse.builder()
-                                    .message("email khong hop le")
+                                    .message("Email address is invalid")
                                     .build()
                     );
         }
@@ -62,7 +59,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(
                             AuthenticationResponse.builder()
-                                    .message("khong duoc de trong")
+                                    .message("Username or email address is required")
                                     .build()
                     );
         }
@@ -71,7 +68,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(
                             AuthenticationResponse.builder()
-                                    .message("email khong hop le")
+                                    .message("Email address is invalid")
                                     .build()
                     );
         }

@@ -1,7 +1,6 @@
 package com.deltadc.quizletclone.auth;
 
 import com.deltadc.quizletclone.auth.authtoken.ConfirmationToken;
-import com.deltadc.quizletclone.auth.authtoken.ConfirmationTokenRepository;
 import com.deltadc.quizletclone.auth.authtoken.ConfirmationTokenService;
 import com.deltadc.quizletclone.passwordreset.PasswordResetToken;
 import com.deltadc.quizletclone.passwordreset.PasswordResetTokenRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +19,6 @@ public class CleanupTask {
 
     private final ConfirmationTokenService confirmationTokenService;
     private final UserRepository userRepository;
-    private final ConfirmationTokenRepository confirmationTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Scheduled(fixedRate = 60000 * 5)
@@ -32,7 +29,6 @@ public class CleanupTask {
             User user = token.getUser();
             if (user != null && !user.getEnabled()) {
                 userRepository.delete(user);
-                // Optionally, you can also delete the expired token from the database
                 confirmationTokenService.deleteConfirmationToken(token);
             }
         }
@@ -46,9 +42,7 @@ public class CleanupTask {
                 .filter(token -> token.getExpiryDate().isBefore(LocalDateTime.now()))
                 .toList();
 
-        for (PasswordResetToken token : expiredTokens) {
-            passwordResetTokenRepository.delete(token);
-        }
+        passwordResetTokenRepository.deleteAll(expiredTokens);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.deltadc.quizletclone.auth.authtoken;
 
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,21 +24,17 @@ public class ConfirmationTokenService {
         return confirmationTokenRepository.findByToken(token);
     }
 
-    public int setConfirmedAt(String token) {
-        return confirmationTokenRepository.updateConfirmedAt(
+    public void setConfirmedAt(String token) {
+        confirmationTokenRepository.updateConfirmedAt(
                 token, LocalDateTime.now());
     }
 
     public List<ConfirmationToken> findExpiredTokens(LocalDateTime now) {
-        // Assuming ConfirmationTokenRepository is used to access ConfirmationToken entities
         List<ConfirmationToken> allTokens = confirmationTokenRepository.findAll();
 
-        // Filter tokens that have expired
-        List<ConfirmationToken> expiredTokens = allTokens.stream()
+        return allTokens.stream()
                 .filter(token -> token.getExpiresAt().isBefore(now))
                 .collect(Collectors.toList());
-
-        return expiredTokens;
     }
 
     public void deleteConfirmationToken(ConfirmationToken token) {
