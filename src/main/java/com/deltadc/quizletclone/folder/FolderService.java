@@ -5,20 +5,18 @@ import com.deltadc.quizletclone.folderset.FolderSetRepository;
 import com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.set.SetController;
 import com.deltadc.quizletclone.set.SetDTO;
-import com.deltadc.quizletclone.user.Role;
-import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +26,14 @@ public class FolderService {
     private final FolderSetRepository folderSetRepository;
     private final SetController setController;
 
-
-
     public Folder createFolder(Folder folder) {
 
-        Folder createdFolder = new Folder(
-                folder.getUser_id(),
-                folder.getTitle(),
-                folder.getDescription(),
-                folder.isPublic()
-        );
+        Folder createdFolder = Folder.builder()
+                .user_id(folder.getUser_id())
+                .title(folder.getTitle())
+                .description(folder.getDescription())
+                .isPublic(folder.isPublic())
+                .build();
 
         return folderRepository.save(createdFolder);
     }
@@ -55,9 +51,7 @@ public class FolderService {
     public Page<Folder> getPublicFolders(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Folder> publicFolders = folderRepository.findByIsPublic(true, pageable);
-
-        return publicFolders;
+        return folderRepository.findByIsPublic(true, pageable);
     }
 
     public void deleteFolder(Long folderId) {
@@ -72,7 +66,6 @@ public class FolderService {
 
         List<SetDTO> setDTOList = new ArrayList<>();
         for(FolderSet fs : fsPage) {
-            //System.out.println(fs.getFolder_set_id() + " " + fs.getFolder().getFolder_id() + " " + fs.getSet().getSet_id());
             Set s = fs.getSet();
             Long userId = s.getUser_id();
             String username = userRepository.findById(userId).get().getName();

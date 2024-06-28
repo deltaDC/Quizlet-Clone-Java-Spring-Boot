@@ -4,9 +4,7 @@ import com.deltadc.quizletclone.response.ResponseObject;
 import com.deltadc.quizletclone.user.Role;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
-import com.deltadc.quizletclone.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,31 +27,17 @@ public class FolderController {
     }
 
     private boolean isFolderOwner(Folder f) {
-        // Trích xuất thông tin người dùng từ JWT
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
 
-        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
         User user = userRepository.findByEmail(username).orElseThrow();
         Long userId = user.getUser_id();
 
         if(user.getRole().compareTo(Role.ADMIN) == 0) {
-            System.out.println(user.getRole());
             return true;
         }
 
         return Objects.equals(userId, f.getUser_id());
-    }
-
-    private FolderDTO convertToDTO(Folder folder) {
-        return new FolderDTO(
-                folder.getFolder_id(),
-                folder.getTitle(),
-                folder.getDescription(),
-                folder.getCreatedAt(),
-                folder.getUpdatedAt(),
-                folder.isPublic()
-        );
     }
 
     //tạo folder mới
@@ -111,10 +94,10 @@ public class FolderController {
     //lấy toàn bộ folder của người dùng dựa trên user_id
     @GetMapping("/{userId}/folders")
     public ResponseEntity<ResponseObject> getUserFolders(@PathVariable("userId") Long userId) {
-        List<Folder> userFolders = folderService.getUserFolders(userId);
-        List<FolderDTO> userFolderDTOs = userFolders.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<FolderDTO> userFolderDTOs = folderService.getUserFolders(userId)
+                .stream()
+                .map(FolderDTO::fromFolderToFolderDTO)
+                .toList();
 
         return ResponseEntity.ok(
                 ResponseObject.builder()
@@ -193,7 +176,7 @@ public class FolderController {
 
     //tim folder theo title
     @GetMapping("/title/{title}")
-    public ResponseEntity<?> getFolderByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getFolderByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
         Page<Folder> folderPage = folderService.getFolderByTitle(title, page, size);
 
         return ResponseEntity.ok(
