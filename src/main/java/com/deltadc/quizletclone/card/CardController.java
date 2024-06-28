@@ -6,7 +6,6 @@ import com.deltadc.quizletclone.set.SetRepository;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,7 +94,8 @@ public class CardController {
 
     // Tạo card mới
     @PostMapping("/{set_id}/create_card")
-    public ResponseEntity<ResponseObject> createCard(@PathVariable("set_id") Long set_id, @RequestBody Card card) throws Exception {
+    public ResponseEntity<ResponseObject> createCard(@PathVariable("set_id") Long set_id,
+                                                     @RequestBody Card card) throws Exception {
         if(isEmptyCardInput(card)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
@@ -118,7 +118,8 @@ public class CardController {
     // Chỉnh sửa card theo id
     //TODO change from if to @PreAuthorize
     @PutMapping("/edit/{id}")
-    public ResponseEntity<ResponseObject> updateCard(@PathVariable Long id, @RequestBody Card updatedCard) {
+    public ResponseEntity<ResponseObject> updateCard(@PathVariable Long id,
+                                                     @RequestBody Card updatedCard) {
         if(isEmptyCardInput(updatedCard)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
@@ -172,7 +173,8 @@ public class CardController {
 
     // tao mot list cac card theo set id
     @PostMapping("/{set_id}/create-cards")
-    public ResponseEntity<ResponseObject> createCards(@PathVariable("set_id") Long setId, @RequestBody List<Card> cardList) throws Exception {
+    public ResponseEntity<ResponseObject> createCards(@PathVariable("set_id") Long setId,
+                                                      @RequestBody List<Card> cardList) throws Exception {
         boolean allCardsValid = cardList.stream().allMatch(this::isEmptyCardInput);
 
         if(!allCardsValid) {
