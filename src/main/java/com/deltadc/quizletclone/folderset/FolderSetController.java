@@ -85,7 +85,7 @@ public class FolderSetController {
 
     //lay tat ca cac folder set theo setId
     @GetMapping("/set/{setId}")
-    public ResponseEntity<?> getFolderSetBySetId(@PathVariable("setId") Long setId) {
+    public ResponseEntity<ResponseObject> getFolderSetBySetId(@PathVariable("setId") Long setId) {
         List<FolderSet> folderSets = folderSetService.getFolderSetBySetId(setId);
 
         return ResponseEntity.ok(
@@ -99,7 +99,7 @@ public class FolderSetController {
 
     //sua folder set
     @PutMapping("/edit/{folderSetId}")
-    public ResponseEntity<?> editFolderSetById(@PathVariable("folderSetId") Long folderSetId,
+    public ResponseEntity<ResponseObject> editFolderSetById(@PathVariable("folderSetId") Long folderSetId,
                                                @RequestBody FolderSet newFolderSet) {
         FolderSet updatedFS = folderSetService.editFolderSetById(folderSetId, newFolderSet);
 
