@@ -4,6 +4,7 @@ import com.deltadc.quizletclone.email.EmailSender;
 import com.deltadc.quizletclone.passwordreset.PasswordResetToken;
 import com.deltadc.quizletclone.passwordreset.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +25,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final EmailSender emailSender;
+
+    @Value("${reset.password.url}")
+    private String resetPasswordUrl;
 
     private boolean isUserOwner(User user) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -137,7 +141,7 @@ public class UserService {
         passwordResetTokenRepository.save(passwordResetToken);
 
         //them gui email tai day
-        String link = "http://localhost:8080/api/user/confirm-reset-password?token=" + token + "&userId=" + user_id;
+        String link = resetPasswordUrl + token + "&userId=" + user_id;
 //        emailSender.send(
 //                email,
 //                link
