@@ -20,16 +20,14 @@ public class SetService {
     private final UserRepository userRepository;
 
     private boolean isSetOwner(Set s) {
-        // Trích xuất thông tin người dùng từ JWT
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = (UserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
         String username = userDetails.getUsername();
 
-        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
         User user = userRepository.findByEmail(username).orElseThrow();
         Long userId = user.getUser_id();
-        System.out.println("userId id " + userId);
-
-        System.out.println("user id of set is " + s.getUser_id());
 
         if(user.getRole().compareTo(Role.ADMIN) == 0) {
             System.out.println(user.getRole());
@@ -40,28 +38,24 @@ public class SetService {
     }
 
     public Set createSet(Set set) {
-        Set createdSet = new Set();
-        createdSet.setTitle(set.getTitle());
-        createdSet.setDescription(set.getDescription());
-        createdSet.setPublic(set.isPublic());
-        createdSet.setUser_id(set.getUser_id());
+        Set createdSet = Set.builder()
+                .title(set.getTitle())
+                .description(set.getDescription())
+                .isPublic(set.isPublic())
+                .user_id(set.getUser_id())
+                .build();
 
         return setRepository.save(createdSet);
     }
 
-    //tra ve toan bo set cua nguoi dung theo userId
     public Page<Set> getUserSets(Long userId, int page, int size) {
-        // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
         Pageable pageable = PageRequest.of(page, size);
 
         return setRepository.findByUserId(userId, pageable);
     }
 
     public String deleteSet(Long setId) {
-        Set s = setRepository.findById(setId).orElse(null);
-        if(s == null) {
-            return "Set is not exist";
-        }
+        Set s = setRepository.findById(setId).orElseThrow();
 
         if(!isSetOwner(s)) {
             return "Unauthorized";
@@ -88,9 +82,7 @@ public class SetService {
         set.setDescription(newSet.getDescription());
         set.setPublic(newSet.isPublic());
 
-        setRepository.save(set);
-
-        return set;
+        return setRepository.save(set);
     }
 
     public Page<Set> getPublicSet(int page, int size) {
