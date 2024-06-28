@@ -34,14 +34,13 @@ public class ReviewService {
     public ResponseEntity<Double> getSetAverageRating(@PathVariable Long setId) {
         List<Review> setReviews = reviewRepository.findReviewsBySetId(setId);
 
-        int totalStars = 0;
-        int numberOfReviews = setReviews.size();
+        int totalStars = setReviews.stream()
+                .mapToInt(Review::getTotalStars)
+                .sum();
 
-        for (Review review : setReviews) {
-            totalStars += review.getTotalStars();
-        }
-
-        double averageRating = numberOfReviews > 0 ? (double) totalStars / numberOfReviews : 0.0;
+        double averageRating = setReviews.isEmpty()
+                ? 0.0
+                : (double) totalStars / setReviews.size();
 
         return ResponseEntity.ok(averageRating);
     }
@@ -50,26 +49,25 @@ public class ReviewService {
     public Review postSetReviews(@PathVariable Long setId, @RequestBody Review review) {
         Long userId = review.getUser_id();
 
-        // Kiểm tra xem user đã review set này trước đó chưa
         boolean hasReviewed = reviewRepository.existsBySetIdAndUserId(setId, userId);
         if (hasReviewed) {
             return null;
         }
 
-        boolean isOwner = setRepository.findById(setId).get().getUser_id() == userId;
+        boolean isOwner = setRepository.findById(setId)
+                .map(s -> s.getUser_id().equals(userId))
+                .orElse(false);
         if(isOwner) {
             return null;
         }
 
-        Review createdReview = new Review(
-                review.getUser_id(),
-                review.getSet_id(),
-                review.getTotalStars()
-        );
+        Review createdReview = Review.builder()
+                .user_id(review.getUser_id())
+                .set_id(review.getSet_id())
+                .totalStars(review.getTotalStars())
+                .build();
 
-        reviewRepository.save(createdReview);
-
-        return createdReview;
+        return reviewRepository.save(createdReview);
     }
 
     public List<Review> getAllReviews() {
@@ -89,9 +87,7 @@ public class ReviewService {
 
         review.setTotalStars(newReview.getTotalStars());
 
-        reviewRepository.save(review);
-
-        return review;
+        return reviewRepository.save(review);
     }
 
     public String deleteReviewById(Long reviewId) {
