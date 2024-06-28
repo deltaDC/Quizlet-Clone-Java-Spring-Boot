@@ -20,25 +20,19 @@ public class SetTagService {
         Long set_id = setTag.getSet_id();
         Long tag_id = setTag.getTag_id();
 
-        Set set = setRepository.findById(set_id).orElse(null);
-        if (set == null) {
-            return null;
-        }
-        Tag tag = tagRepository.findById(tag_id).orElse(null);
-        if (tag == null) {
-            return null;
-        }
+        Set set = setRepository.findById(set_id).orElseThrow();
+        Tag tag = tagRepository.findById(tag_id).orElseThrow();
+
         SetTag newSetTag = new SetTag(set.getSet_id(), tag.getTag_id());
 
         return setTagRepository.save(newSetTag);
     }
 
     public String deleteSetTag(Long set_tag_id) {
-        SetTag setTag = setTagRepository.findById(set_tag_id).orElse(null);
-        if (setTag == null) {
-            return "Cannot find this set tag!";
-        }
+        setTagRepository.findById(set_tag_id).orElseThrow();
+
         setTagRepository.deleteById(set_tag_id);
+
         return "Deleted!";
     }
 
