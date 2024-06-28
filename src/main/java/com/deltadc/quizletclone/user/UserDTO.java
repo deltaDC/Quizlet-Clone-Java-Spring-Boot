@@ -15,4 +15,13 @@ public class UserDTO {
 
     private Role role;
 
+    public static UserDTO fromUserToUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUser_id(user.getUser_id());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setRole(user.getRole());
+        return userDTO;
+    }
+
 }

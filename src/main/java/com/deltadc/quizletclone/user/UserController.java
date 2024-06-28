@@ -16,14 +16,25 @@ public class UserController {
 
     private final UserService userService;
 
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setUser_id(user.getUser_id());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
+    private ResponseEntity<ResponseObject> getNullCheckedResponse(User u) {
+        if(u == null) {
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Unauthorized")
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
 
-        return dto;
+        UserDTO userDTO = UserDTO.fromUserToUserDTO(u);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Field changed")
+                        .status(HttpStatus.OK)
+                        .data(userDTO)
+                        .build()
+        );
     }
 
     //lay ra toan bo user
@@ -55,7 +66,8 @@ public class UserController {
 
     //edit mat khau cua 1 user theo userId
     @PutMapping("/change-password/{userId}")
-    public ResponseEntity<ResponseObject> changeUserPassWordById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+    public ResponseEntity<ResponseObject> changeUserPassWordById(@PathVariable("userId") Long userId,
+                                                                 @RequestBody User newUser) {
 
         if(newUser.getPassword().isEmpty()) {
             return ResponseEntity.ok(
@@ -67,24 +79,7 @@ public class UserController {
         }
 
         User u = userService.changeUserPassWordById(userId, newUser);
-        if(u == null) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Unauthorized")
-                            .status(HttpStatus.UNAUTHORIZED)
-                            .build()
-            );
-        }
-
-        UserDTO userDTO = convertToDTO(u);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("password changed")
-                        .status(HttpStatus.OK)
-                        .data(userDTO)
-                        .build()
-        );
+        return getNullCheckedResponse(u);
     }
 
     //lay user dua theo user id
@@ -130,7 +125,8 @@ public class UserController {
     }
 
     @PutMapping("/change-username/{userId}")
-    public ResponseEntity<ResponseObject> changeUsernameById(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+    public ResponseEntity<ResponseObject> changeUsernameById(@PathVariable("userId") Long userId,
+                                                             @RequestBody User newUser) {
 
         if(newUser.getName().isEmpty()) {
             return ResponseEntity.ok(
@@ -143,24 +139,7 @@ public class UserController {
 
         User u = userService.changeUsernameById(userId, newUser);
 
-        if(u == null) {
-             return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Unauthorized")
-                            .status(HttpStatus.UNAUTHORIZED)
-                            .build()
-            );
-        }
-
-        UserDTO userDTO = convertToDTO(u);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("password changed")
-                        .status(HttpStatus.OK)
-                        .data(userDTO)
-                        .build()
-        );
+        return getNullCheckedResponse(u);
     }
 
     @PostMapping("/forgot-password")
@@ -183,7 +162,8 @@ public class UserController {
 
     //edit mat khau cua 1 user theo userId
     @PutMapping("/reset-password/{userId}")
-    public ResponseEntity<ResponseObject> resetPasswordByUserId(@PathVariable("userId") Long userId, @RequestBody User newUser) {
+    public ResponseEntity<ResponseObject> resetPasswordByUserId(@PathVariable("userId") Long userId,
+                                                                @RequestBody User newUser) {
 
         if(newUser.getPassword().isEmpty()) {
             return ResponseEntity.ok(
@@ -195,23 +175,6 @@ public class UserController {
         }
 
         User u = userService.resetPasswordByUserId(userId, newUser);
-        if(u == null) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Unauthorized")
-                            .status(HttpStatus.UNAUTHORIZED)
-                            .build()
-            );
-        }
-
-        UserDTO userDTO = convertToDTO(u);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("password changed")
-                        .status(HttpStatus.OK)
-                        .data(userDTO)
-                        .build()
-        );
+        return getNullCheckedResponse(u);
     }
 }

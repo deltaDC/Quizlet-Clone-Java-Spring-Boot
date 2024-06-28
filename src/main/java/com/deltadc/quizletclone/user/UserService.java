@@ -28,7 +28,6 @@ public class UserService {
     private boolean isUserOwner(User user) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userMail = userDetails.getUsername();
-        System.out.println(userMail);
 
         User u = userRepository.findByEmail(userMail).orElseThrow();
 
@@ -40,21 +39,15 @@ public class UserService {
         return Objects.equals(u.getUser_id(), user.getUser_id());
     }
 
+    private UserDTO getUserDTO(Optional<User> user) {
+        return user.map(UserDTO::fromUserToUserDTO).orElse(null);
+    }
+
     public List<UserDTO> getAllUsers() {
         List<User> userList = userRepository.findAll();
-        List<UserDTO> userDTOS = userList.stream()
-                .map(user -> {
-                    UserDTO userDTO = new UserDTO();
-                    userDTO.setUser_id(user.getUser_id());
-                    userDTO.setUsername(user.getName());
-                    userDTO.setEmail(user.getEmail());
-                    userDTO.setRole(user.getRole());
 
-                    return userDTO;
-                }).toList();
-
-
-        return userDTOS;
+        return userList.stream()
+                .map(UserDTO::fromUserToUserDTO).toList();
     }
 
     public String deleteUserById(Long userId) {
@@ -96,49 +89,19 @@ public class UserService {
     public UserDTO getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
 
-        if(user.isPresent()) {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUser_id(user.get().getUser_id());
-            userDTO.setUsername(user.get().getName());
-            userDTO.setEmail(user.get().getEmail());
-            userDTO.setRole(user.get().getRole());
-
-            return userDTO;
-        } else {
-            return null;
-        }
+        return getUserDTO(user);
     }
 
     public UserDTO getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
 
-        if(user.isPresent()) {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUser_id(user.get().getUser_id());
-            userDTO.setUsername(user.get().getName());
-            userDTO.setEmail(user.get().getEmail());
-            userDTO.setRole(user.get().getRole());
-
-            return userDTO;
-        } else {
-            return null;
-        }
+        return getUserDTO(user);
     }
 
     public UserDTO getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
 
-        if(user.isPresent()) {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUser_id(user.get().getUser_id());
-            userDTO.setUsername(user.get().getName());
-            userDTO.setEmail(user.get().getEmail());
-            userDTO.setRole(user.get().getRole());
-
-            return userDTO;
-        } else {
-            return null;
-        }
+        return getUserDTO(user);
     }
 
     public User changeUsernameById(Long userId, User newUser) {

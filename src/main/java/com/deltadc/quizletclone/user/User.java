@@ -98,7 +98,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-//        setEnabled(false);
         return enabled;
     }
 
