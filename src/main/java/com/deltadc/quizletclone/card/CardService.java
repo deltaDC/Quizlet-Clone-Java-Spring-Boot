@@ -70,12 +70,16 @@ public class CardService {
         cardRepository.deleteById(id);
     }
 
-    public List<Card> createCards(Long setId, List<Card> cardList) throws Exception {
+    public List<Card> createCards(Long setId, List<Card> cardList) throws NoSuchElementException {
         Set set = setRepository.findById(setId)
                 .orElseThrow(() -> new NoSuchElementException("Set not found"));
 
         cardList.forEach(card -> card.setSet_id(set.getSet_id()));
 
         return cardRepository.saveAll(cardList);
+    }
+
+    public List<Card> getListCardsBySetId(Long setId) {
+        return cardRepository.findListCardsBySetId(setId);
     }
 }

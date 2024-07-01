@@ -60,9 +60,6 @@ public class Set {
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<Card> cards;
 
-//    @ManyToMany(mappedBy = "set")
-//    private List<Folder> folders;
-
     @JsonIgnore
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<Review> reviews;
@@ -74,16 +71,6 @@ public class Set {
     @JsonIgnore
     @OneToMany(mappedBy = "set", cascade = CascadeType.ALL)
     private List<FolderSet> folderSets;
-
-//    public void addCard(Card card) {
-//        cards.add(card);
-//        card.setSet(this);
-//    }
-//
-//    public void removeCard(Card card) {
-//        cards.remove(card);
-//        card.setSet(null);
-//    }
 
     @PrePersist
     protected void onCreate() {

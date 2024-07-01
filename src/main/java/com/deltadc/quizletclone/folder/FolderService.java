@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class FolderService {
     }
 
     public Folder getFolderById(Long id) {
-        return folderRepository.findById(id).get();
+        return folderRepository.findById(id).orElseThrow();
     }
 
     public Page<Folder> getAllFolders(int page, int size) {
@@ -64,15 +63,16 @@ public class FolderService {
 
         Page<FolderSet> fsPage = folderSetRepository.findByFolderIdWithPageable(folderId, pageable);
 
-        List<SetDTO> setDTOList = new ArrayList<>();
-        for(FolderSet fs : fsPage) {
-            Set s = fs.getSet();
-            Long userId = s.getUser_id();
-            String username = userRepository.findById(userId).get().getName();
-            SetDTO sDTO = setController.convertToDTO(s);
-            sDTO.setOwnerName(username);
-            setDTOList.add(sDTO);
-        }
+        List<SetDTO> setDTOList = fsPage.stream()
+                .map(fs -> {
+                    Set s = fs.getSet();
+                    Long userId = s.getUser_id();
+                    String username = userRepository.findById(userId).orElseThrow().getName();
+                    SetDTO sDTO = setController.convertToDTO(s);
+                    sDTO.setOwnerName(username);
+                    return sDTO;
+                })
+                .toList();
 
         Map<String, Object> response = new HashMap<>();
         response.put("content", setDTOList);
@@ -88,7 +88,7 @@ public class FolderService {
     }
 
     public Folder editFolderById(Long folderId, Folder newFolder) {
-        Folder folder = folderRepository.findById(folderId).get();
+        Folder folder = folderRepository.findById(folderId).orElseThrow();
 
         folder.setTitle(newFolder.getTitle());
         folder.setDescription(newFolder.getDescription());

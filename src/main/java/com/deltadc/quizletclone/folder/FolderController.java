@@ -1,9 +1,7 @@
 package com.deltadc.quizletclone.folder;
 
 import com.deltadc.quizletclone.response.ResponseObject;
-import com.deltadc.quizletclone.user.Role;
-import com.deltadc.quizletclone.user.User;
-import com.deltadc.quizletclone.user.UserRepository;
+import com.deltadc.quizletclone.user.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,7 +18,7 @@ import java.util.Objects;
 @RequestMapping("/api/folder")
 public class FolderController {
     private final FolderService folderService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private boolean isEmptyFolderInput(Folder folder) {
         return folder.getTitle().isEmpty() || folder.getDescription().isEmpty() || String.valueOf(folder.isPublic()).isEmpty();
@@ -30,7 +28,7 @@ public class FolderController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
 
-        User user = userRepository.findByEmail(username).orElseThrow();
+        UserDTO user = userService.getUserByEmail(username);
         Long userId = user.getUser_id();
 
         if(user.getRole().compareTo(Role.ADMIN) == 0) {
@@ -65,7 +63,8 @@ public class FolderController {
 
     //lay toan bo cac folder hien co
     @GetMapping("/get-all-folders")
-    public ResponseEntity<ResponseObject> getAllFolders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getAllFolders(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "30") int size) {
         Page<Folder> folderPage = folderService.getAllFolders(page, size);
 
         return ResponseEntity.ok(
@@ -79,7 +78,8 @@ public class FolderController {
 
     //lay toan bo public folder
     @GetMapping("/get-public-folders")
-    public ResponseEntity<ResponseObject> getPublicFolders(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getPublicFolders(@RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "30") int size) {
         Page<Folder> folderPage = folderService.getPublicFolders(page, size);
 
         return ResponseEntity.ok(
@@ -142,7 +142,8 @@ public class FolderController {
 
     //edit folder theo folderId
     @PutMapping("/edit/{folderId}")
-    public ResponseEntity<ResponseObject> editFolderById(@PathVariable("folderId") Long folderId, @RequestBody Folder newFolder) {
+    public ResponseEntity<ResponseObject> editFolderById(@PathVariable("folderId") Long folderId,
+                                                         @RequestBody Folder newFolder) {
         if(isEmptyFolderInput(newFolder)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
@@ -176,7 +177,9 @@ public class FolderController {
 
     //tim folder theo title
     @GetMapping("/title/{title}")
-    public ResponseEntity<ResponseObject> getFolderByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getFolderByTitle(@PathVariable("title") String title,
+                                                           @RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "30") int size) {
         Page<Folder> folderPage = folderService.getFolderByTitle(title, page, size);
 
         return ResponseEntity.ok(

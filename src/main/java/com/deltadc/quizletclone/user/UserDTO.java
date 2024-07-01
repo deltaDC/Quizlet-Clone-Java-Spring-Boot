@@ -1,10 +1,12 @@
 package com.deltadc.quizletclone.user;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class UserDTO {
 
     private Long user_id;
@@ -16,12 +18,12 @@ public class UserDTO {
     private Role role;
 
     public static UserDTO fromUserToUserDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUser_id(user.getUser_id());
-        userDTO.setUsername(user.getUsername());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setRole(user.getRole());
-        return userDTO;
+        return UserDTO.builder()
+                .user_id(user.getUser_id())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
     }
 
 }

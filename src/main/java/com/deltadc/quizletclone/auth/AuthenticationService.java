@@ -24,15 +24,10 @@ import java.util.UUID;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
-
     private final AuthenticationManager authenticationManager;
-
     private final ConfirmationTokenService confirmationTokenService;
-
     private final EmailSender emailSender;
 
     public ResponseEntity<AuthenticationResponse> signup(SignUpRequest request) {

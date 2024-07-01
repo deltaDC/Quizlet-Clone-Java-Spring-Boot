@@ -2,10 +2,9 @@ package com.deltadc.quizletclone.set;
 
 
 import com.deltadc.quizletclone.card.Card;
-import com.deltadc.quizletclone.card.CardRepository;
+import com.deltadc.quizletclone.card.CardService;
 import com.deltadc.quizletclone.response.ResponseObject;
-import com.deltadc.quizletclone.user.User;
-import com.deltadc.quizletclone.user.UserRepository;
+import com.deltadc.quizletclone.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,26 +21,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/set")
 public class SetController {
     private final SetService setService;
-    private final UserRepository userRepository;
-    private final CardRepository cardRepository;
+    private final CardService cardService;
+    private final UserService userService;
 
     public SetDTO convertToDTO(Set set) {
-        User user = userRepository.findById(set.getUser_id()).orElseThrow();
-        String username = user.getName();
+        String username = userService.getUserById(set.getUser_id()).getUsername();
 
-        List<Card> cards = cardRepository.findListCardsBySetId(set.getSet_id());
+        List<Card> cards = cardService.getListCardsBySetId(set.getSet_id());
 
-        SetDTO setDTO = new SetDTO();
-        setDTO.setSetId(set.getSet_id());
-        setDTO.setUserId(user.getUser_id());
-        setDTO.setTitle(set.getTitle());
-        setDTO.setDescription(set.getDescription());
-        setDTO.setCreatedAt(set.getCreatedAt());
-        setDTO.setUpdatedAt(set.getUpdatedAt());
-        setDTO.setPublic(set.isPublic());
-        setDTO.setTermCount((long) cards.size());
-        setDTO.setOwnerName(username);
-        return setDTO;
+        return SetDTO.fromSetToSetDTO(set, username, cards.size());
     }
 
     private boolean isEmptySetInput(Set set) {
@@ -128,7 +116,8 @@ public class SetController {
 
     //edit mot set theo setId
     @PutMapping("/edit/{setId}")
-    public ResponseEntity<ResponseObject> editSetById(@PathVariable("setId") Long setId, @RequestBody Set newSet) {
+    public ResponseEntity<ResponseObject> editSetById(@PathVariable("setId") Long setId,
+                                                      @RequestBody Set newSet) {
         if(isEmptySetInput(newSet)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
@@ -151,7 +140,8 @@ public class SetController {
 
     //lay tat ca cac public set
     @GetMapping("/get-public-sets")
-    public ResponseEntity<ResponseObject> getPublicSets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getPublicSets(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getPublicSet(page, size);
 
         List<SetDTO> setDTOPage = setPage.stream()
@@ -169,7 +159,9 @@ public class SetController {
 
     //tim set theo title
     @GetMapping("/title/{title}")
-    public ResponseEntity<ResponseObject> getSetByTitle(@PathVariable("title") String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "30") int size) {
+    public ResponseEntity<ResponseObject> getSetByTitle(@PathVariable("title") String title,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "30") int size) {
         Page<Set> setPage = setService.getSetByTitle(title, page, size);
 
         List<SetDTO> setDTOPage = setPage.stream()

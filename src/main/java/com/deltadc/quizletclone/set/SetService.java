@@ -1,8 +1,6 @@
 package com.deltadc.quizletclone.set;
 
-import com.deltadc.quizletclone.user.Role;
-import com.deltadc.quizletclone.user.User;
-import com.deltadc.quizletclone.user.UserRepository;
+import com.deltadc.quizletclone.user.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +15,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class SetService {
     private final SetRepository setRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private boolean isSetOwner(Set s) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder
@@ -26,7 +24,7 @@ public class SetService {
                 .getPrincipal();
         String username = userDetails.getUsername();
 
-        User user = userRepository.findByEmail(username).orElseThrow();
+        UserDTO user = userService.getUserByEmail(username);
         Long userId = user.getUser_id();
 
         if(user.getRole().compareTo(Role.ADMIN) == 0) {
@@ -97,6 +95,10 @@ public class SetService {
         Pageable pageable = PageRequest.of(page, size);
 
         return setRepository.findByTitleContainingAndIsPublic(title, true, pageable);
+    }
 
+    public Set getSetById(Long setId) throws Exception {
+        return setRepository.findById(setId)
+                .orElseThrow(() -> new Exception("Set not found"));
     }
 }

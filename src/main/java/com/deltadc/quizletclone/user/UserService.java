@@ -4,6 +4,8 @@ import com.deltadc.quizletclone.email.EmailSender;
 import com.deltadc.quizletclone.passwordreset.PasswordResetToken;
 import com.deltadc.quizletclone.passwordreset.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
@@ -37,6 +40,7 @@ public class UserService {
 
         if(user.getRole().compareTo(Role.ADMIN) == 0) {
             System.out.println(user.getRole());
+            log.atTrace().log("User is admin");
             return true;
         }
 

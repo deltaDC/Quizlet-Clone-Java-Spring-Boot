@@ -2,9 +2,9 @@ package com.deltadc.quizletclone.card;
 
 import com.deltadc.quizletclone.response.ResponseObject;
 import com.deltadc.quizletclone.set.Set;
-import com.deltadc.quizletclone.set.SetRepository;
-import com.deltadc.quizletclone.user.User;
-import com.deltadc.quizletclone.user.UserRepository;
+import com.deltadc.quizletclone.set.SetService;
+import com.deltadc.quizletclone.user.UserDTO;
+import com.deltadc.quizletclone.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,29 +22,27 @@ import java.util.Objects;
 @RequestMapping("/api/card")
 public class CardController {
     private final CardService cardService;
-    private final UserRepository userRepository;
-    private final CardRepository cardRepository;
-    private final SetRepository setRepository;
+    private final UserService userService;
+    private final SetService setService;
 
     private boolean isEmptyCardInput(Card card) {
         return card.getFront_text().isEmpty() || card.getBack_text().isEmpty();
     }
 
-    private boolean isCardOwner(Long cardId) {
-        // Trích xuất thông tin người dùng từ JWT
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    private boolean isCardOwner(Long cardId) throws Exception {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
         String username = userDetails.getUsername();
 
-        // Tìm thông tin người dùng từ username = email và thiết lập trường user của Set
-        User user = userRepository.findByEmail(username).orElseThrow();
+        UserDTO user = userService.getUserByEmail(username);
         Long userId = user.getUser_id();
-        System.out.println("userId is " + userId);
 
-        Card c = cardRepository.findById(cardId).orElseThrow();
+        CardDTO c = cardService.getCardById(cardId);
 
         Long setId = c.getSet_id();
-        Set s = setRepository.findById(setId).orElseThrow();
-        System.out.println("user id of set is " + s.getUser_id());
+        Set s = setService.getSetById(setId);
 
         return Objects.equals(s.getUser_id(), userId);
     }
@@ -119,7 +117,7 @@ public class CardController {
     //TODO change from if to @PreAuthorize
     @PutMapping("/edit/{id}")
     public ResponseEntity<ResponseObject> updateCard(@PathVariable Long id,
-                                                     @RequestBody Card updatedCard) {
+                                                     @RequestBody Card updatedCard) throws Exception {
         if(isEmptyCardInput(updatedCard)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
@@ -151,7 +149,7 @@ public class CardController {
 
     // Xóa card theo id
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseObject> deleteCard(@PathVariable Long id) {
+    public ResponseEntity<ResponseObject> deleteCard(@PathVariable Long id) throws Exception {
         if(!isCardOwner(id)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
