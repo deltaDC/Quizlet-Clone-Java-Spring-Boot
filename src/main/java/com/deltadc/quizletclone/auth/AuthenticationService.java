@@ -7,6 +7,7 @@ import com.deltadc.quizletclone.config.JwtService;
 import com.deltadc.quizletclone.user.Role;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
+import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -167,7 +168,7 @@ public class AuthenticationService {
         return "Email đã xác thực vui lòng quay trở lại trang <a href='http://localhost:3000/login'>đăng nhập</a>";
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
