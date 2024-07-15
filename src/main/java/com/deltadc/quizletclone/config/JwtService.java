@@ -1,21 +1,18 @@
 package com.deltadc.quizletclone.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.security.Key;
+import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 /*
 JwtService để thực hiện các service liên quan đến token
@@ -29,70 +26,54 @@ public class JwtService {
     private String SECRET_KEY;
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    // thu lại các claim từ token
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    // sinh ra token mới
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
-
-    // sinh ra token mới với extraClaims
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-
-    // kiểm tra token còn valid hay không
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-    }
-
-    // kiểm tra token hết hạn hay chưa
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    // thu tất cả các claims
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    // Hàm hỗ trợ lấy JWT token từ request
-    public String extractTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            if (signedJWT.verify(verifier)) {
+                return signedJWT.getJWTClaimsSet().getSubject();
+            }
+        } catch (Exception e) {
+            // Handle exception
         }
         return null;
+    }
+
+    private JWSSigner signer;
+    private JWSVerifier verifier;
+
+    @PostConstruct
+    public void init() throws JOSEException {
+        signer = new MACSigner(SECRET_KEY);
+        verifier = new MACVerifier(SECRET_KEY);
+    }
+
+    public String generateToken(UserDetails userDetails) throws JOSEException {
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .subject(userDetails.getUsername())
+                .issueTime(new Date())
+                .expirationTime(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .claim("roles", userDetails.getAuthorities())
+                .build();
+
+        SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+        signedJWT.sign(signer);
+
+        return signedJWT.serialize();
+    }
+
+    public JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        if (!signedJWT.verify(verifier)) {
+            throw new JOSEException("Signature verification failed");
+        }
+        return signedJWT.getJWTClaimsSet();
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        try {
+            JWTClaimsSet claims = extractAllClaims(token);
+            return claims.getSubject().equals(userDetails.getUsername()) && !claims.getExpirationTime().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
