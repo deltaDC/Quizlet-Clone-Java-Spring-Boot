@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,109 +45,62 @@ public class UserService {
         return Objects.equals(u.getUser_id(), user.getUser_id());
     }
 
-    private UserDTO getUserDTO(Optional<User> user) {
-        return user.map(UserDTO::fromUserToUserDTO).orElse(null);
-    }
-
-    public List<UserDTO> getAllUsers() {
-        List<User> userList = userRepository.findAll();
-
-        return userList.stream()
-                .map(UserDTO::fromUserToUserDTO).toList();
-    }
-
     public String deleteUserById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        return userRepository.findById(userId)
+                .map(user -> {
+                    if(!isUserOwner(user)) {
+                        return "Unauthorized";
+                    }
 
-        if(!isUserOwner(user)) {
-            return "Unauthorized";
-        }
-
-        userRepository.delete(user);
-
-        return "User deleted";
+                    userRepository.delete(user);
+                    return "User deleted";
+                })
+                .orElse("User not found");
     }
 
-    public User changeUserPassWordById(Long userId, User newUser) {
-        User user = userRepository.findById(userId).orElseThrow();
-
-        if(!isUserOwner(user)) {
-            return null;
-        }
-
-        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-
-        userRepository.save(user);
-
-        return user;
-    }
-
-    public User resetPasswordByUserId(Long userId, User newUser) {
-        User user = userRepository.findById(userId).orElseThrow();
-
-        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-
-        userRepository.save(user);
-
-        return user;
+    public User updateUserById(Long userId, User newUser) {
+        return userRepository.findById(userId)
+                .map(u -> {
+                    Optional.ofNullable(newUser.getName()).ifPresent(u::setUsername);
+                    Optional.ofNullable(newUser.getPassword())
+                            .ifPresent(password -> u.setPassword(passwordEncoder.encode(password)));
+                    return userRepository.save(u);
+                })
+                .orElseThrow();
     }
 
     public UserDTO getUserById(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-
-        return getUserDTO(user);
-    }
-
-    public UserDTO getUserByUsername(String username) {
-        Optional<User> user = userRepository.findByUsername(username);
-
-        return getUserDTO(user);
+        return userRepository.findById(userId)
+                .map(UserDTO::fromUserToUserDTO)
+                .orElse(null);
     }
 
     public UserDTO getUserByEmail(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-
-        return getUserDTO(user);
-    }
-
-    public User changeUsernameById(Long userId, User newUser) {
-        User u = userRepository.findById(userId).orElseThrow();
-
-        if(!isUserOwner(u)) {
-            return null;
-        }
-
-        u.setUsername(newUser.getName());
-
-        userRepository.save(u);
-
-        return u;
+        return userRepository.findByEmail(email)
+                .map(UserDTO::fromUserToUserDTO)
+                .orElse(null);
     }
 
     public PasswordResetToken forgotPassword(String email) {
-
-        Optional<User> u = userRepository.findByEmail(email);
-        if(u.isEmpty()) {
-            return null;
-        }
+        Long user_id = userRepository.findByEmail(email)
+                .map(User::getUser_id)
+                .orElse(null);
 
         String token = UUID.randomUUID().toString();
-        Long user_id = u.get().getUser_id();
 
-        PasswordResetToken passwordResetToken = new PasswordResetToken(
-                token,
-                u.get().getUser_id(),
-                LocalDateTime.now().plusMinutes(15)
-        );
+        PasswordResetToken passwordResetToken = PasswordResetToken.builder()
+                .token(token)
+                .user_id(user_id)
+                .expiryDate(LocalDateTime.now().plusMinutes(15))
+                .build();
 
         passwordResetTokenRepository.save(passwordResetToken);
 
-        //them gui email tai day
         String link = resetPasswordUrl + token + "&userId=" + user_id;
-//        emailSender.send(
-//                email,
-//                link
-//        );
+        emailSender.send(
+                email,
+                link
+        );
 
         return passwordResetToken;
     }
@@ -172,4 +123,12 @@ public class UserService {
         );
     }
 
+    public List<UserDTO> listUsersByFilter(String username,
+                                           String email,
+                                           String role) {
+        Specification<User> specification = UserSpecification.withDynamicQuery(username, email, role);
+        return userRepository.findAll(specification).stream()
+                .map(UserDTO::fromUserToUserDTO)
+                .toList();
+    }
 }

@@ -5,51 +5,18 @@ import com.deltadc.quizletclone.response.ResponseObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // danh dau class nay la RESTful Controller
-@RequiredArgsConstructor // tự động tạo một constructor chứa tất cả các trường được đánh dấu là final hoặc @NonNull.
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
-
-    private ResponseEntity<ResponseObject> getNullCheckedResponse(User u) {
-        if(u == null) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Unauthorized")
-                            .status(HttpStatus.UNAUTHORIZED)
-                            .build()
-            );
-        }
-
-        UserDTO userDTO = UserDTO.fromUserToUserDTO(u);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("Field changed")
-                        .status(HttpStatus.OK)
-                        .data(userDTO)
-                        .build()
-        );
-    }
-
-    //lay ra toan bo user
-    @GetMapping("/get-all-users")
-    public ResponseEntity<ResponseObject> getAllUsers() {
-        List<UserDTO> users = userService.getAllUsers();
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("Users found")
-                        .data(users)
-                        .status(HttpStatus.OK)
-                        .build()
-        );
-    }
 
     //xoa user theo id
     @DeleteMapping("/delete-user/{userId}")
@@ -62,24 +29,6 @@ public class UserController {
                         .status(HttpStatus.OK)
                         .build()
         );
-    }
-
-    //edit mat khau cua 1 user theo userId
-    @PutMapping("/change-password/{userId}")
-    public ResponseEntity<ResponseObject> changeUserPassWordById(@PathVariable("userId") Long userId,
-                                                                 @RequestBody User newUser) {
-
-        if(newUser.getPassword().isEmpty()) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Invalid")
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
-
-        User u = userService.changeUserPassWordById(userId, newUser);
-        return getNullCheckedResponse(u);
     }
 
     //lay user dua theo user id
@@ -96,50 +45,34 @@ public class UserController {
         );
     }
 
-    //lay user dua theo username
-    @GetMapping("/username/{username}")
-    public ResponseEntity<ResponseObject> getUserByUsername(@PathVariable("username") String username) {
-        UserDTO userDTO = userService.getUserByUsername(username);
+    //lay user dua tren filter
+    @GetMapping("/list")
+    public ResponseEntity<ResponseObject> listUsers(@Nullable @RequestParam("username") String username,
+                                                    @Nullable @RequestParam("email") String email,
+                                                    @Nullable @RequestParam("role") String role) {
+        List<UserDTO> users = userService.listUsersByFilter(username, email, role);
 
         return ResponseEntity.ok(
                 ResponseObject.builder()
-                        .message("User found")
-                        .data(userDTO)
+                        .message("Users found")
+                        .data(users)
                         .status(HttpStatus.OK)
                         .build()
         );
     }
 
-    //lay user dua theo email
-    @GetMapping("/email/{email}")
-    public ResponseEntity<?> getUserByEmail(@PathVariable("email") String email) {
-        UserDTO userDTO = userService.getUserByEmail(email);
+    @PatchMapping("/update/{userId}")
+    public ResponseEntity<ResponseObject> updateUserById(@PathVariable("userId") Long userId,
+                                                         @NonNull @RequestBody User newUser) {
+        User u = userService.updateUserById(userId, newUser);
 
         return ResponseEntity.ok(
                 ResponseObject.builder()
-                        .message("User found")
-                        .data(userDTO)
+                        .message("Field changed")
                         .status(HttpStatus.OK)
+                        .data(UserDTO.fromUserToUserDTO(u))
                         .build()
         );
-    }
-
-    @PutMapping("/change-username/{userId}")
-    public ResponseEntity<ResponseObject> changeUsernameById(@PathVariable("userId") Long userId,
-                                                             @RequestBody User newUser) {
-
-        if(newUser.getName().isEmpty()) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Invalid")
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
-
-        User u = userService.changeUsernameById(userId, newUser);
-
-        return getNullCheckedResponse(u);
     }
 
     @PostMapping("/forgot-password")
@@ -158,23 +91,5 @@ public class UserController {
     @GetMapping("/confirm-reset-password")
     public String confirmResetPassword(@RequestParam("token") String token) {
         return userService.confirmResetPassword(token);
-    }
-
-    //edit mat khau cua 1 user theo userId
-    @PutMapping("/reset-password/{userId}")
-    public ResponseEntity<ResponseObject> resetPasswordByUserId(@PathVariable("userId") Long userId,
-                                                                @RequestBody User newUser) {
-
-        if(newUser.getPassword().isEmpty()) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Invalid")
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
-
-        User u = userService.resetPasswordByUserId(userId, newUser);
-        return getNullCheckedResponse(u);
     }
 }

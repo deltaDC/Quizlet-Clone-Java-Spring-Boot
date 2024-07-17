@@ -2,8 +2,11 @@ package com.deltadc.quizletclone.review;
 
 import com.deltadc.quizletclone.response.ResponseObject;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +31,8 @@ public class ReviewController {
 
     // tạo một review mới
     @PostMapping("/sets/{set_id}/review")
-    public ResponseEntity<ResponseObject> postSetReviews(@PathVariable("set_id") Long setId, @RequestBody Review review) {
+    public ResponseEntity<ResponseObject> postSetReviews(@PathVariable("set_id") Long setId,
+                                                         @NonNull @RequestBody Review review) {
         if(isInvalidReview(review)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
@@ -49,37 +53,10 @@ public class ReviewController {
         );
     }
 
-    //lay tat ca cac review
-    @GetMapping("/get-all-reviews")
-    public ResponseEntity<ResponseObject> getAllReviews() {
-        List<Review> reviews = reviewService.getAllReviews();
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("All reviews fetched")
-                        .status(HttpStatus.OK)
-                        .data(reviews)
-                        .build()
-        );
-    }
-
-    //lay tat ca review theo userId
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ResponseObject> getReviewsByUserId(@PathVariable("userId") Long userId) {
-        List<Review> reviews = reviewService.getReviewsByUserId(userId);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("reviews by userId fetched")
-                        .status(HttpStatus.OK)
-                        .data(reviews)
-                        .build()
-        );
-    }
-
     //sua mot review theo id
     @PutMapping("/edit/{reviewId}")
-    public ResponseEntity<ResponseObject> editReviewById(@PathVariable("reviewId") Long reviewId, @RequestBody Review newReview) {
+    public ResponseEntity<ResponseObject> editReviewById(@PathVariable("reviewId") Long reviewId,
+                                                         @NonNull @RequestBody Review newReview) {
         if(isInvalidReview(newReview)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()
@@ -112,16 +89,20 @@ public class ReviewController {
         );
     }
 
-    //lay review theo userId va setId
-    @GetMapping("/set/{setId}/user/{userId}")
-    public ResponseEntity<ResponseObject> getReviewByUserIdAndSetId(@PathVariable("setId") Long setId, @PathVariable("userId") Long userId) {
-        Review review = reviewService.getReviewByUserIdAndSetId(setId, userId);
+    //lay review theo filter
+    @GetMapping("/list")
+    public ResponseEntity<ResponseObject> getReviewsByFilter(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "30") int size,
+                                                             @Nullable @RequestParam("totalStars") Integer totalStars,
+                                                             @Nullable @RequestParam("userId") Long userId,
+                                                             @Nullable @RequestParam("setId") Long setId) {
+        Page<Review> reviews = reviewService.getReviewsByFilter(page, size, totalStars, userId, setId);
 
         return ResponseEntity.ok(
                 ResponseObject.builder()
-                        .message("review by userId and setId fetched")
+                        .message("reviews found")
                         .status(HttpStatus.OK)
-                        .data(review)
+                        .data(reviews)
                         .build()
         );
     }

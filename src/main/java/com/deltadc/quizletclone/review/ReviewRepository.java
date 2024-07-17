@@ -1,11 +1,12 @@
 package com.deltadc.quizletclone.review;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
     @Query("SELECT r FROM Review r WHERE r.set.set_id = :setId")
     List<Review> findReviewsBySetId(Long setId);
 

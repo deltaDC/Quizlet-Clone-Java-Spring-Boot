@@ -2,25 +2,28 @@ package com.deltadc.quizletclone.folder;
 
 import com.deltadc.quizletclone.folderset.FolderSet;
 import com.deltadc.quizletclone.folderset.FolderSetRepository;
+import com.deltadc.quizletclone.folderset.FolderSetService;
 import com.deltadc.quizletclone.set.Set;
 import com.deltadc.quizletclone.set.SetController;
 import com.deltadc.quizletclone.set.SetDTO;
-import com.deltadc.quizletclone.user.UserRepository;
+import com.deltadc.quizletclone.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class FolderService {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final FolderRepository folderRepository;
     private final FolderSetRepository folderSetRepository;
     private final SetController setController;
@@ -41,18 +44,6 @@ public class FolderService {
         return folderRepository.findById(id).orElseThrow();
     }
 
-    public Page<Folder> getAllFolders(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return folderRepository.findAll(pageable);
-    }
-
-    public Page<Folder> getPublicFolders(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return folderRepository.findByIsPublic(true, pageable);
-    }
-
     public void deleteFolder(Long folderId) {
         folderRepository.deleteById(folderId);
     }
@@ -67,7 +58,7 @@ public class FolderService {
                 .map(fs -> {
                     Set s = fs.getSet();
                     Long userId = s.getUser_id();
-                    String username = userRepository.findById(userId).orElseThrow().getName();
+                    String username = userService.getUserById(userId).getUsername();
                     SetDTO sDTO = setController.convertToDTO(s);
                     sDTO.setOwnerName(username);
                     return sDTO;
@@ -81,27 +72,22 @@ public class FolderService {
         return ResponseEntity.ok(response);
     }
 
-    //tra ve toan bo folder cua user theo userId
-    public List<Folder> getUserFolders(Long userId) {
-        // Truy vấn tất cả các set thuộc về userId từ cơ sở dữ liệu
-        return folderRepository.findByUserId(userId);
-    }
-
     public Folder editFolderById(Long folderId, Folder newFolder) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow();
-
-        folder.setTitle(newFolder.getTitle());
-        folder.setDescription(newFolder.getDescription());
-        folder.setPublic(newFolder.isPublic());
-
-        folderRepository.save(folder);
-
-        return folder;
+        return folderRepository.findById(folderId)
+                .map(folder -> {
+                    Optional.ofNullable(newFolder.getTitle()).ifPresent(folder::setTitle);
+                    Optional.ofNullable(newFolder.getDescription()).ifPresent(folder::setDescription);
+                    Optional.of(newFolder.isPublic()).ifPresent(folder::setPublic);
+                    return folderRepository.save(folder);
+                })
+                .orElse(null);
     }
 
-    public Page<Folder> getFolderByTitle(String title, int page, int size) {
+    public Page<Folder> getFoldersByFilter(int page, int size, String title, Boolean isPublic, Long userId) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return folderRepository.findByTitleContainingAndIsPublic(title, true, pageable);
+        Specification<Folder> setSpecification = FolderSpecification.withDynamicQuery(title, isPublic, userId);
+
+        return folderRepository.findAll(setSpecification, pageable);
     }
 }

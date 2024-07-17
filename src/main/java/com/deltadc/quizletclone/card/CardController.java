@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -93,15 +94,7 @@ public class CardController {
     // Tạo card mới
     @PostMapping("/{set_id}/create_card")
     public ResponseEntity<ResponseObject> createCard(@PathVariable("set_id") Long set_id,
-                                                     @RequestBody Card card) throws Exception {
-        if(isEmptyCardInput(card)) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Card should not be empty")
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
+                                                     @NonNull @RequestBody Card card) throws Exception {
         Card createdCard = cardService.createCard(card, set_id);
         return ResponseEntity.ok(
                 ResponseObject.builder()
@@ -117,16 +110,7 @@ public class CardController {
     //TODO change from if to @PreAuthorize
     @PutMapping("/edit/{id}")
     public ResponseEntity<ResponseObject> updateCard(@PathVariable Long id,
-                                                     @RequestBody Card updatedCard) throws Exception {
-        if(isEmptyCardInput(updatedCard)) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("card should not be empty")
-                            .status(HttpStatus.NOT_ACCEPTABLE)
-                            .build()
-            );
-        }
-
+                                                     @NonNull @RequestBody Card updatedCard) throws Exception {
         if(!isCardOwner(id)) {
             return ResponseEntity.ok(
                     ResponseObject.builder()

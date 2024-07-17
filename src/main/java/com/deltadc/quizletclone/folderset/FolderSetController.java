@@ -2,8 +2,11 @@ package com.deltadc.quizletclone.folderset;
 
 import com.deltadc.quizletclone.response.ResponseObject;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +18,8 @@ public class FolderSetController {
     private final FolderSetService folderSetService;
 
     // tạo folder set mới
-    @PostMapping("/create-folder-set")
-    public ResponseEntity<ResponseObject> createFolderSet(@RequestBody FolderSet folderSet) {
+    @PostMapping("/create")
+    public ResponseEntity<ResponseObject> createFolderSet(@NonNull @RequestBody FolderSet folderSet) {
         FolderSet fs = folderSetService.createFolderSet(folderSet);
 
         return ResponseEntity.ok(
@@ -41,56 +44,18 @@ public class FolderSetController {
         );
     }
 
-    //lay folder set theo folderSetId
-    @GetMapping("/{folderSetId}")
-    public ResponseEntity<ResponseObject> getFolderSetById(@PathVariable("folderSetId") Long folderSetId) {
-        FolderSet folderSet = folderSetService.getFolderSetById(folderSetId);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("folder-set found")
-                        .status(HttpStatus.OK)
-                        .data(folderSet)
-                        .build()
-        );
-    }
-
-    //lay tat ca cac folder set
-    @GetMapping("/get-all-folder-sets")
-    public ResponseEntity<ResponseObject> getAllFolderSets() {
-        List<FolderSet> folderSet = folderSetService.getAllFolderSets();
+    //lay folder set theo filter
+    @GetMapping("/list")
+    public ResponseEntity<ResponseObject> getFolderSetsByFilter(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "30") int size,
+                                                                @Nullable @RequestParam("folderSetId") Long folderSetId,
+                                                                @Nullable @RequestParam("folderId") Long folderId,
+                                                                @Nullable @RequestParam("setId") Long setId) {
+        Page<FolderSet> folderSets = folderSetService.getFolderSetsByFilter(page, size, folderSetId, folderId, setId);
 
         return ResponseEntity.ok(
                 ResponseObject.builder()
                         .message("folder-sets found")
-                        .status(HttpStatus.OK)
-                        .data(folderSet)
-                        .build()
-        );
-    }
-
-    //lay tat ca cac folder set theo folderId
-    @GetMapping("/folder/{folderId}")
-    public ResponseEntity<ResponseObject> getFolderSetByFolderId(@PathVariable("folderId") Long folderId) {
-        List<FolderSet> folderSets = folderSetService.getFolderSetByFolderId(folderId);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("folder-sets by folderId found")
-                        .status(HttpStatus.OK)
-                        .data(folderSets)
-                        .build()
-        );
-    }
-
-    //lay tat ca cac folder set theo setId
-    @GetMapping("/set/{setId}")
-    public ResponseEntity<ResponseObject> getFolderSetBySetId(@PathVariable("setId") Long setId) {
-        List<FolderSet> folderSets = folderSetService.getFolderSetBySetId(setId);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("folder-sets by setId found")
                         .status(HttpStatus.OK)
                         .data(folderSets)
                         .build()
@@ -100,7 +65,7 @@ public class FolderSetController {
     //sua folder set
     @PutMapping("/edit/{folderSetId}")
     public ResponseEntity<ResponseObject> editFolderSetById(@PathVariable("folderSetId") Long folderSetId,
-                                               @RequestBody FolderSet newFolderSet) {
+                                               @NonNull @RequestBody FolderSet newFolderSet) {
         FolderSet updatedFS = folderSetService.editFolderSetById(folderSetId, newFolderSet);
 
         return ResponseEntity.ok(

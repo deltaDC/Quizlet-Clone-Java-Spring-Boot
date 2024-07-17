@@ -3,18 +3,16 @@ package com.deltadc.quizletclone.passwordreset;
 import com.deltadc.quizletclone.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class PasswordResetToken {
     private static final int EXPIRATION = 60 * 24;
@@ -35,11 +33,4 @@ public class PasswordResetToken {
 
     @Column(nullable = false)
     private LocalDateTime expiryDate;
-
-
-    public PasswordResetToken(String token, Long user_id, LocalDateTime expiryDate) {
-        this.token = token;
-        this.user_id = user_id;
-        this.expiryDate = expiryDate;
-    }
 }

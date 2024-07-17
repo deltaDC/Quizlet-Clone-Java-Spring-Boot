@@ -4,6 +4,10 @@ import com.deltadc.quizletclone.folder.FolderRepository;
 import com.deltadc.quizletclone.set.SetRepository;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +19,6 @@ public class FolderSetService {
     private final FolderRepository folderRepository;
     private final SetRepository setRepository;
     private final FolderSetRepository folderSetRepository;
-    private final UserRepository userRepository;
 
     public FolderSet createFolderSet(FolderSet folderSet) {
         Long folderId = folderSet.getFolder_id();
@@ -43,18 +46,6 @@ public class FolderSetService {
         folderSetRepository.deleteById(folderSetId);
     }
 
-    public FolderSet getFolderSetById(Long folderSetId) {
-        return folderSetRepository.findById(folderSetId).orElseThrow();
-    }
-
-    public List<FolderSet> getAllFolderSets() {
-        return folderSetRepository.findAll();
-    }
-
-    public List<FolderSet> getFolderSetByFolderId(Long folderId) {
-        return folderSetRepository.findByFolderId(folderId);
-    }
-
     public List<FolderSet> getFolderSetBySetId(Long setId) {
         return folderSetRepository.findBySetId(setId);
     }
@@ -72,5 +63,14 @@ public class FolderSetService {
         FolderSet fs = folderSetRepository.findByFolderIdAndSetId(folderSetId, setId).orElseThrow();
 
         folderSetRepository.delete(fs);
+    }
+
+    public Page<FolderSet> getFolderSetsByFilter(int page, int size, Long folderSetId, Long folderId, Long setId) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<FolderSet> folderSetSpecification = FolderSetSpecification
+                .withDynamicQuery(folderSetId, folderId, setId);
+
+        return folderSetRepository.findAll(folderSetSpecification, pageable);
     }
 }

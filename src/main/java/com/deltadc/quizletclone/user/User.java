@@ -15,12 +15,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Data // sinh ra getter, setter, toString,... tu dong
-@Builder // tao doi tuong linh hoat hon (khong can dung vi tri tham so)
-@NoArgsConstructor // tao constructor ko doi tu dong
+@Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@Entity // danh dau la entity trong database
-@Table(name = "user") // table voi ten la "user"
+@Entity
+@Table(name = "user")
 public class User implements UserDetails {
 
     public User(String username, String email, String password, Role role, Boolean enabled) {
@@ -31,7 +31,6 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
-    // danh dau la id va auto_increment
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")

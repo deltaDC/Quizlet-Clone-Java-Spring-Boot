@@ -20,7 +20,7 @@ public class UserDTO {
     public static UserDTO fromUserToUserDTO(User user) {
         return UserDTO.builder()
                 .user_id(user.getUser_id())
-                .username(user.getUsername())
+                .username(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .build();

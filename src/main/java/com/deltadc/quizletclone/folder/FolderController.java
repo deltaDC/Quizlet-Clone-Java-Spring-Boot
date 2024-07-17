@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +21,6 @@ import java.util.Objects;
 public class FolderController {
     private final FolderService folderService;
     private final UserService userService;
-
-    private boolean isEmptyFolderInput(Folder folder) {
-        return folder.getTitle().isEmpty() || folder.getDescription().isEmpty() || String.valueOf(folder.isPublic()).isEmpty();
-    }
 
     private boolean isFolderOwner(Folder f) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -40,16 +38,7 @@ public class FolderController {
 
     //tạo folder mới
     @PostMapping("/create-folder")
-    public ResponseEntity<ResponseObject> createFolder(@RequestBody Folder folder) {
-        if(isEmptyFolderInput(folder)) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("folder should not be empty")
-                            .status(HttpStatus.NOT_ACCEPTABLE)
-                            .build()
-            );
-        }
-
+    public ResponseEntity<ResponseObject> createFolder(@NonNull @RequestBody Folder folder) {
         Folder createdFolder = folderService.createFolder(folder);
 
         return ResponseEntity.ok(
@@ -61,49 +50,20 @@ public class FolderController {
         );
     }
 
-    //lay toan bo cac folder hien co
-    @GetMapping("/get-all-folders")
-    public ResponseEntity<ResponseObject> getAllFolders(@RequestParam(defaultValue = "0") int page,
-                                                        @RequestParam(defaultValue = "30") int size) {
-        Page<Folder> folderPage = folderService.getAllFolders(page, size);
+    //lay folder theo filter
+    @GetMapping("/list")
+    public ResponseEntity<ResponseObject> getFoldersByFilter(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "30") int size,
+                                                             @Nullable @RequestParam("title") String title,
+                                                             @Nullable @RequestParam("isPublic") Boolean isPublic,
+                                                             @Nullable @RequestParam("userId") Long userId) {
+        Page<Folder> folderPage = folderService.getFoldersByFilter(page, size, title, isPublic, userId);
 
         return ResponseEntity.ok(
                 ResponseObject.builder()
                         .message("folders found")
                         .status(HttpStatus.OK)
                         .data(folderPage)
-                        .build()
-        );
-    }
-
-    //lay toan bo public folder
-    @GetMapping("/get-public-folders")
-    public ResponseEntity<ResponseObject> getPublicFolders(@RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "30") int size) {
-        Page<Folder> folderPage = folderService.getPublicFolders(page, size);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("public folders found")
-                        .status(HttpStatus.OK)
-                        .data(folderPage)
-                        .build()
-        );
-    }
-
-    //lấy toàn bộ folder của người dùng dựa trên user_id
-    @GetMapping("/{userId}/folders")
-    public ResponseEntity<ResponseObject> getUserFolders(@PathVariable("userId") Long userId) {
-        List<FolderDTO> userFolderDTOs = folderService.getUserFolders(userId)
-                .stream()
-                .map(FolderDTO::fromFolderToFolderDTO)
-                .toList();
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("user's folders found")
-                        .status(HttpStatus.OK)
-                        .data(userFolderDTOs)
                         .build()
         );
     }
@@ -143,16 +103,7 @@ public class FolderController {
     //edit folder theo folderId
     @PutMapping("/edit/{folderId}")
     public ResponseEntity<ResponseObject> editFolderById(@PathVariable("folderId") Long folderId,
-                                                         @RequestBody Folder newFolder) {
-        if(isEmptyFolderInput(newFolder)) {
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("folder should not be empty")
-                            .status(HttpStatus.OK)
-                            .build()
-            );
-        }
-
+                                                         @NonNull @RequestBody Folder newFolder) {
         Folder folder = folderService.getFolderById(folderId);
 
         if(!isFolderOwner(folder)) {
@@ -171,22 +122,6 @@ public class FolderController {
                         .message("folder updated")
                         .status(HttpStatus.OK)
                         .data(updatedFolder)
-                        .build()
-        );
-    }
-
-    //tim folder theo title
-    @GetMapping("/title/{title}")
-    public ResponseEntity<ResponseObject> getFolderByTitle(@PathVariable("title") String title,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "30") int size) {
-        Page<Folder> folderPage = folderService.getFolderByTitle(title, page, size);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("folder updated")
-                        .status(HttpStatus.OK)
-                        .data(folderPage)
                         .build()
         );
     }

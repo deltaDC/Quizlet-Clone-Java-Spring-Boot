@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -46,12 +47,6 @@ public class SetService {
         return setRepository.save(createdSet);
     }
 
-    public Page<Set> getUserSets(Long userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return setRepository.findByUserId(userId, pageable);
-    }
-
     public String deleteSet(Long setId) {
         Set s = setRepository.findById(setId).orElseThrow();
 
@@ -61,12 +56,6 @@ public class SetService {
 
         setRepository.deleteById(setId);
         return "Set is deleted";
-    }
-
-    public Page<Set> getAllSets(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return setRepository.findAll(pageable);
     }
 
     public Set editSetById(Long setId, Set newSet) {
@@ -83,22 +72,16 @@ public class SetService {
         return setRepository.save(set);
     }
 
-    public Page<Set> getPublicSet(int page, int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
-
-        return setRepository.findByIsPublic(true, pageable);
-    }
-
-    public Page<Set> getSetByTitle(String title, int page, int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
-
-        return setRepository.findByTitleContainingAndIsPublic(title, true, pageable);
-    }
-
     public Set getSetById(Long setId) throws Exception {
         return setRepository.findById(setId)
                 .orElseThrow(() -> new Exception("Set not found"));
+    }
+
+    public Page<Set> getSetByFilter(String title, Boolean isPublic, Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<Set> setSpecification = SetSpecification.withDynamicQuery(title, isPublic, userId);
+
+        return setRepository.findAll(setSpecification, pageable);
     }
 }

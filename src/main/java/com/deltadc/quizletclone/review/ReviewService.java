@@ -4,6 +4,10 @@ import com.deltadc.quizletclone.set.SetRepository;
 import com.deltadc.quizletclone.user.User;
 import com.deltadc.quizletclone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -104,5 +108,13 @@ public class ReviewService {
 
     public Review getReviewByUserIdAndSetId(Long setId, Long userId) {
         return reviewRepository.findBySetIdAndUserId(setId, userId);
+    }
+
+    public Page<Review> getReviewsByFilter(int page, int size, Integer totalStars, Long userId, Long setId) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<Review> reviewSpecification = ReviewSpecification.withDynamicQuery(totalStars, userId, setId);
+
+        return reviewRepository.findAll(reviewSpecification, pageable);
     }
 }
