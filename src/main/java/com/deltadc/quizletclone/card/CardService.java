@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,31 +19,14 @@ public class CardService {
     private final CardRepository cardRepository;
     private final SetRepository setRepository;
 
-    public List<CardDTO> getAllCards() {
-        return cardRepository.findAll().stream()
-                .map(CardDTO::fromCardToCardDTO).toList();
-    }
-
     public CardDTO getCardById(Long id) {
         return cardRepository.findById(id)
                 .map(CardDTO::fromCardToCardDTO)
-                .orElseThrow();
+                .orElse(null);
     }
 
-    public Page<CardDTO> getCardsInSet(Long set_id, int page, int size) {
+    public Card createCard(Card card, Long set_id) {
         setRepository.findById(set_id).orElseThrow();
-        List<CardDTO> cards = cardRepository.findCardsBySetId(set_id, PageRequest.of(page, size)).stream()
-                .map(CardDTO::fromCardToCardDTO).toList();
-
-        return new PageImpl<>(cards, PageRequest.of(page, size), cards.size());
-    }
-
-    public Card createCard(Card card, Long set_id) throws Exception {
-        setRepository.findById(set_id).orElseThrow();
-
-        if(card.getFront_text().isEmpty() || card.getBack_text().isEmpty()) {
-            throw new Exception("card should not be empty");
-        }
 
         Card newCard = Card.builder()
                 .set_id(set_id)
@@ -81,5 +66,14 @@ public class CardService {
 
     public List<Card> getListCardsBySetId(Long setId) {
         return cardRepository.findListCardsBySetId(setId);
+    }
+
+    public Page<CardDTO> getCardsByFilter(int page, int size, Long cardId, Long setId) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<Card> cardSpecification = CardSpecification.withDynamicQuery(cardId, setId);
+
+        return cardRepository.findAll(cardSpecification, pageable)
+                .map(CardDTO::fromCardToCardDTO);
     }
 }

@@ -2,8 +2,10 @@ package com.deltadc.quizletclone.tag;
 
 import com.deltadc.quizletclone.response.ResponseObject;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,37 +16,26 @@ import java.util.List;
 public class TagController {
     private final TagService tagService;
 
-    // Lấy ra tất cả tag
-    @GetMapping("/get-all-tags")
-    public ResponseEntity<ResponseObject> getAllTags() {
-        List<Tag> tags = tagService.getAllTags();
+    //lay tag theo filter
+    @GetMapping("/list")
+    public ResponseEntity<ResponseObject> getTagsByFilter(@RequestParam(defaultValue = "0") int page,
+                                                          @Nullable @RequestParam(defaultValue = "30") int size,
+                                                          @Nullable @RequestParam("tagId") Long tagId,
+                                                          @Nullable @RequestParam("tagName") String tagName) {
+        Page<Tag> tags = tagService.getTagsByFilter(page, size, tagId, tagName);
 
         return ResponseEntity.ok(
                 ResponseObject.builder()
-                        .message("All tags fetched successfully")
+                        .message("Tags found")
                         .status(HttpStatus.OK)
                         .data(tags)
                         .build()
         );
     }
 
-    // Lấy ra tag theo id
-    @GetMapping("/{tag_id}")
-    public ResponseEntity<ResponseObject> getTag(@PathVariable("tag_id") Long tag_id) {
-        Tag tag = tagService.getTag(tag_id);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("Tag fetched successfully")
-                        .status(HttpStatus.OK)
-                        .data(tag)
-                        .build()
-        );
-    }
-
     // Tạo tag mới
     @PostMapping("/create_tag")
-    public ResponseEntity<?> createTag(@RequestBody Tag tag) {
+    public ResponseEntity<ResponseObject> createTag(@RequestBody Tag tag) {
         Tag createdTag = tagService.createTag(tag);
 
         return ResponseEntity.ok(
@@ -73,7 +64,7 @@ public class TagController {
 
     // Xóa tag
     @DeleteMapping("/{tag_id}")
-    public ResponseEntity<?> deleteTag(@PathVariable("tag_id") Long tag_id) {
+    public ResponseEntity<ResponseObject> deleteTag(@PathVariable("tag_id") Long tag_id) {
         String response = tagService.deleteTag(tag_id);
 
         return ResponseEntity.ok(

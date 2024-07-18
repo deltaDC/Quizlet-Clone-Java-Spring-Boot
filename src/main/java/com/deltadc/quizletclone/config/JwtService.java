@@ -6,6 +6,8 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,10 @@ JwtService để thực hiện các service liên quan đến token
 @Service
 public class JwtService {
 
+    private JWSSigner signer;
+    private JWSVerifier verifier;
+
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
     @Value("${app.secretkey}")
     private String SECRET_KEY;
 
@@ -32,13 +38,10 @@ public class JwtService {
                 return signedJWT.getJWTClaimsSet().getSubject();
             }
         } catch (Exception e) {
-            // Handle exception
+            log.error("Failed to extract username from token", e);
         }
         return null;
     }
-
-    private JWSSigner signer;
-    private JWSVerifier verifier;
 
     @PostConstruct
     public void init() throws JOSEException {

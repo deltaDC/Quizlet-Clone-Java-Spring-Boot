@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -48,45 +49,19 @@ public class CardController {
         return Objects.equals(s.getUser_id(), userId);
     }
 
-    // Lấy ra thông tin của tất cả card
-    @GetMapping("/cards")
-    public ResponseEntity<ResponseObject> getAllCards() {
-        List<CardDTO> cardDTOS = cardService.getAllCards();
+    //lay card theo filter
+    @GetMapping("/list")
+    public ResponseEntity<ResponseObject> getCardsByFilter(@RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "30") int size,
+                                                           @Nullable @RequestParam("cardId") Long cardId,
+                                                           @Nullable @RequestParam("setId") Long setId) {
+        Page<CardDTO> cards = cardService.getCardsByFilter(page, size, cardId, setId);
+
         return ResponseEntity.ok(
                 ResponseObject.builder()
-                        .message("all cards found")
+                        .message("cards found")
                         .status(HttpStatus.OK)
-                        .data(cardDTOS)
-                        .build()
-        );
-    }
-
-    // Lấy ra thông tin của 1 card theo id
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject> getCardById(@PathVariable Long id) {
-        CardDTO cardDTO = cardService.getCardById(id);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                    .message("card found")
-                    .status(HttpStatus.OK)
-                    .data(cardDTO)
-                    .build()
-        );
-    }
-
-    // Lấy tất cả cards trong 1 set
-    @GetMapping("/{set_id}/cards")
-    public ResponseEntity<ResponseObject> getCardsInSet(@PathVariable("set_id") Long set_id,
-                                              @RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "30") int size) {
-        Page<CardDTO> cardDTOPage = cardService.getCardsInSet(set_id, page, size);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("all cards in set found")
-                        .status(HttpStatus.OK)
-                        .data(cardDTOPage)
+                        .data(cards)
                         .build()
         );
     }
@@ -156,7 +131,7 @@ public class CardController {
     // tao mot list cac card theo set id
     @PostMapping("/{set_id}/create-cards")
     public ResponseEntity<ResponseObject> createCards(@PathVariable("set_id") Long setId,
-                                                      @RequestBody List<Card> cardList) throws Exception {
+                                                      @NonNull @RequestBody List<Card> cardList) {
         boolean allCardsValid = cardList.stream().allMatch(this::isEmptyCardInput);
 
         if(!allCardsValid) {

@@ -5,6 +5,10 @@ import com.deltadc.quizletclone.set.SetRepository;
 import com.deltadc.quizletclone.tag.Tag;
 import com.deltadc.quizletclone.tag.TagRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,17 +17,13 @@ import java.util.List;
 @AllArgsConstructor
 public class SetTagService {
     private final SetTagRepository setTagRepository;
-    private final SetRepository setRepository;
     private final TagRepository tagRepository;
 
     public SetTag createSetTag(SetTag setTag) {
         Long set_id = setTag.getSet_id();
         Long tag_id = setTag.getTag_id();
 
-        Set set = setRepository.findById(set_id).orElseThrow();
-        Tag tag = tagRepository.findById(tag_id).orElseThrow();
-
-        SetTag newSetTag = new SetTag(set.getSet_id(), tag.getTag_id());
+        SetTag newSetTag = new SetTag(set_id, tag_id);
 
         return setTagRepository.save(newSetTag);
     }
@@ -36,14 +36,6 @@ public class SetTagService {
         return "Deleted!";
     }
 
-    public SetTag getSetTagBySetId(Long setId) {
-        return setTagRepository.findBySetId(setId);
-    }
-
-    public List<SetTag> getAllSetTags() {
-        return setTagRepository.findAll();
-    }
-
     public String getTagNameBySetId(Long setId) {
         SetTag setTag = setTagRepository.findBySetId(setId);
 
@@ -53,4 +45,13 @@ public class SetTagService {
 
         return t.getName();
     }
+
+    public Page<SetTag> getSetTagsByFilter(int page, int size, Long setTagId, Long setId, Long tagId) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<SetTag> specification = SetTagSpecification.withDynamicQuery(setTagId, setId, tagId);
+
+        return setTagRepository.findAll(specification, pageable);
+    }
+
 }

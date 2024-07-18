@@ -2,8 +2,10 @@ package com.deltadc.quizletclone.settag;
 
 import com.deltadc.quizletclone.response.ResponseObject;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,34 +44,6 @@ public class SetTagController {
         );
     }
 
-    //lay set-tag theo setId
-    @GetMapping("/set/{setId}")
-    public ResponseEntity<ResponseObject> getSetTagBySetId(@PathVariable("setId") Long setId) {
-        SetTag setTag = setTagService.getSetTagBySetId(setId);
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("Successfully retrieved set-tag")
-                        .status(HttpStatus.OK)
-                        .data(setTag)
-                        .build()
-        );
-    }
-
-    //lay tat ca cac set tag
-    @GetMapping("/get-all-set-tags")
-    public ResponseEntity<ResponseObject> getAllSetTags() {
-        List<SetTag> setTagList = setTagService.getAllSetTags();
-
-        return ResponseEntity.ok(
-                ResponseObject.builder()
-                        .message("Successfully retrieved set-tags")
-                        .status(HttpStatus.OK)
-                        .data(setTagList)
-                        .build()
-        );
-    }
-
     //lay ra tag name cua mot set
     @GetMapping("/set/{setId}/tag-name")
     public ResponseEntity<ResponseObject> getTagNameBySetId(@PathVariable("setId") Long setId) {
@@ -80,6 +54,24 @@ public class SetTagController {
                         .message("Successfully retrieved tag-name")
                         .status(HttpStatus.OK)
                         .data(tagName)
+                        .build()
+        );
+    }
+
+    //lay set tag theo filter
+    @GetMapping("/list")
+    public ResponseEntity<ResponseObject> getSetTagsByFilter(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "30") int size,
+                                                             @Nullable @RequestParam("setTagId") Long setTagId,
+                                                             @Nullable @RequestParam("setId") Long setId,
+                                                             @Nullable @RequestParam("tagId") Long tagId) {
+        Page<SetTag> setTags = setTagService.getSetTagsByFilter(page, size, setTagId, setId, tagId);
+
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Set-tags found")
+                        .status(HttpStatus.OK)
+                        .data(setTags)
                         .build()
         );
     }
